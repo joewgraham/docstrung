@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import os
 
 
 
@@ -63,7 +64,7 @@ def get_all_modules(package_name):
 
 
 
-def get_functions(module_name, include_private=True):
+def get_functions(module_name, include_private=True, include_module=True):
     """
     From the given module, return a list of all function names.
     """
@@ -80,6 +81,9 @@ def get_functions(module_name, include_private=True):
         if inspect.isfunction(member[1]):
             if module == inspect.getmodule(member[1]):
                 functions.append(member[0])
+
+    if include_module:
+        functions = [module_name + '.' + function for function in functions]
 
     return functions
 
@@ -106,7 +110,7 @@ def get_all_functions(package_name, include_private=True, include_module=True):
 
 
 
-def get_classes(module_name, include_private=True):
+def get_classes(module_name, include_private=True, include_module=True):
     """
     From the given module, return a list of all class names.
     """
@@ -124,6 +128,9 @@ def get_classes(module_name, include_private=True):
             if module == inspect.getmodule(member[1]):
                 classes.append(member[0])
 
+    if include_module:
+        classes = [module_name + '.' + classi for classi in classes]
+
     return classes
 
 
@@ -140,6 +147,7 @@ def get_all_classes(package_name, include_private=True, include_module=True):
     for module in modules:
         
         new_classes = get_classes(module, include_private=include_private)
+        
         if include_module:
             new_classes = [module + '.' + classi for classi in new_classes]
 
@@ -149,16 +157,107 @@ def get_all_classes(package_name, include_private=True, include_module=True):
 
 
 
-def get_methods(class_name):
-    pass
+def get_methods(class_name, include_private=True, include_module=True):
+
+    module_list = class_name.split('.')
+    class_name = module_list.pop()
+    module_name = '.'.join(module_list)
+    imported_module = importlib.import_module(module_name)
+    imported_class = getattr(imported_module, class_name)
+    
+    methods = inspect.getmembers(imported_class, predicate=inspect.isfunction) 
+
+    methods = [method[0] for method in methods if not method[0].startswith('__')]
+
+    if not include_private:
+        methods = [method for method in methods if not method.startswith('_')]
+
+    if include_module:
+        methods = [module_name + '.' + class_name + '.' + method for method in methods]
+
+    return methods
 
 
-def get_all_methods(package_name):
-    pass
+
+def get_all_methods(package_name, include_private=True, include_module=True):
+    
+    methods = []
+
+    module_names = get_all_modules(package_name)
+
+    for module_name in module_names:
+
+        classes = get_classes(module_name)
+        
+        new_methods = get_methods(module_name, include_private=include_private, include_module=include_module)
+
+        methods.extend(new_methods)
+
+    return methods
 
 
-def get_docstring(object):
-    pass
+
+def get_docstring(object_name):
+    
+    try:
+        imported_object = importlib.import_module(object_name)
+    except:
+        module_list = object_name.split('.')
+        object_name = module_list.pop()
+        module_name = '.'.join(module_list)
+        imported_module = importlib.import_module(module_name)
+        imported_object = getattr(imported_module, object_name)
+
+    docstring = imported_object.__doc__
+
+    return docstring
+
+
+
+def get_package_location(package_name):
+    """
+    Returns the path to the package directory.
+    """
+
+    package = importlib.import_module(package_name)
+
+    location = os.path.split(package.__file__)[0]
+
+    return location
+
+
+
+def get_object_file(object_name):
+    
+    try:
+        imported_object = importlib.import_module(object_name)
+    except:
+        module_list = object_name.split('.')
+        object_name = module_list.pop()
+        module_name = '.'.join(module_list)
+        imported_module = importlib.import_module(module_name)
+        imported_object = getattr(imported_module, object_name)
+
+    object_file = imported_object.__file__
+
+    return object_file
+
+
+
+def get_object_signature(object_name):
+    
+    try:
+        imported_object = importlib.import_module(object_name)
+    except:
+        module_list = object_name.split('.')
+        object_name = module_list.pop()
+        module_name = '.'.join(module_list)
+        imported_module = importlib.import_module(module_name)
+        imported_object = getattr(imported_module, object_name)
+
+    signature = inspect.signature(imported_object)        
+
+    return signature
 
 
 
