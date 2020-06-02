@@ -255,6 +255,21 @@ def get_object_signature(object_name):
 
 
 
+def get_object(object_name):
+    
+    try:
+        imported_object = importlib.import_module(object_name)
+    except:
+        module_list = object_name.split('.')
+        object_name = module_list.pop()
+        module_name = '.'.join(module_list)
+        imported_module = importlib.import_module(module_name)
+        imported_object = getattr(imported_module, object_name)
+
+    return imported_object
+
+
+
 
 
 
