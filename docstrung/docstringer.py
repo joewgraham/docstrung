@@ -1,4 +1,18 @@
+"""
+Fix: **Default**: ``required``
+
+Fix: second scipt should have ``
+    script : 
+        Short description of script
+
+"""
+
 from . import get
+from . import write
+
+
+initial_newline = True 
+spacer = '    '
 
 
 def docstringer_subpackage():
@@ -7,24 +21,47 @@ def docstringer_subpackage():
 def docstringer_module():
     pass
 
-def docstringer_function():
-    pass
+def docstringer_function(function_name, initial_newline=initial_newline, spacer=spacer):
+    
+    new_docstring = write.write_docstring(function_name, initial_newline=initial_newline, spacer=spacer)
 
-def docstringer_class():
-    pass
-
-def docstringer_method():
-    pass
-
+    #print(5 * '\n')
+    #print(new_docstring)
+    #print(5 * '\n')
 
 
 
+def docstringer_class(class_name, initial_newline=initial_newline, spacer=spacer):
+    
+    new_docstring = write.write_docstring(class_name, initial_newline=initial_newline, spacer=spacer)
+
+    print(5 * '\n')
+    print(new_docstring)
+    print(5 * '\n')
+
+
+
+
+def docstringer_method(method_name, initial_newline=initial_newline, spacer=spacer):
+
+    new_docstring = write.write_docstring(method_name, initial_newline=initial_newline, spacer=spacer)
 
 
 
 
 
-def docstringer(object_name):
+
+
+
+
+
+
+
+
+
+
+
+def docstringer(object_name, initial_newline=initial_newline, spacer=spacer):
 
     print()
     print(object_name)
@@ -33,52 +70,51 @@ def docstringer(object_name):
     imported_object, object_type = get.get_object(object_name, return_type=True)
 
     print('object_type:', object_type)
-    #print()
+    
+    if object_type == 'package':
+
+        subpackages = get.get_all_subpackages(object_name)
+        print()
+        print('subpackages:', subpackages)
+        print()
+        for subpackage in subpackages:
+            print()
+            print('subpackage: ', subpackage)
+
+        modules = get.get_all_modules(object_name)
+        print()
+        print('modules:', modules)
+        print()
+        for module in modules:
+            print()
+            print('module:', module)
+
+        functions = get.get_all_functions(object_name)
+        print()
+        print('functions:', functions)
+        print()
+        for function in functions:
+            print()
+            print('function:', function)
+            docstringer_function(function, initial_newline=initial_newline, spacer=spacer)
+
+        classes = get.get_all_classes(object_name)
+        print()
+        print('classes:', classes)
+        print()
+        for classi in classes:
+            print()
+            print('class:', classi)
+            docstringer_class(classi, initial_newline=initial_newline, spacer=spacer)
 
 
-
-print(get.get_all_subpackages('netpyne'))
-print()
-for subpackage in get.get_all_subpackages('netpyne'):
-
-    docstringer(subpackage)
-    print('actual type: subpackage')
-
-
-
-print(get.get_all_modules('netpyne'))
-print()
-for module in get.get_all_modules('netpyne'):
-
-    docstringer(module)
-    print('actual type: module')
-
-
-
-print(get.get_all_functions('netpyne'))
-print()
-for function in get.get_all_functions('netpyne'):
-
-    docstringer(function)
-    print('actual type: function')
-
-
-
-print(get.get_all_classes('netpyne'))
-print()
-for classi in get.get_all_classes('netpyne'):
-
-    docstringer(classi)
-    print('actual type: class')
-
-
-
-print(get.get_all_methods('netpyne'))
-print()
-for method in get.get_all_methods('netpyne'):
-
-    docstringer(method)
-    print('actual type: method')
+        methods = get.get_all_methods(object_name)
+        print()
+        print('methods:', methods)
+        print()
+        for method in methods:
+            print()
+            print('method:', method)
 
 
 

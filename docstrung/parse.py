@@ -51,10 +51,13 @@ def parse_parameters(object_name):
 
 def parse_docstring(object_name, template=default_docstringTemplate):
 
-    item = get.get_object(object_name)
+    imported_object, object_type = get.get_object(object_name, return_type=True)
+    print()
+    print('parse_docstring imported_object:', imported_object)
+    print()
 
     try:
-        parsed = FunctionDoc(item)
+        parsed = FunctionDoc(imported_object)
         
         print()
         print(object_name)
@@ -72,7 +75,7 @@ def parse_docstring(object_name, template=default_docstringTemplate):
         parsable = False
 
 
-    docstring_sections = template.sections_dict
+    docstring_sections = template.template_dict
     
     if parsed['Summary']:
         docstring_sections['short_description'] = parsed['Summary']
