@@ -208,14 +208,7 @@ def get_all_methods(package_name, include_private=True, include_module=True):
 
 def get_docstring(object_name):
     
-    try:
-        imported_object = importlib.import_module(object_name)
-    except:
-        module_list = object_name.split('.')
-        object_name = module_list.pop()
-        module_name = '.'.join(module_list)
-        imported_module = importlib.import_module(module_name)
-        imported_object = getattr(imported_module, object_name)
+    imported_object, object_type = get_object(object_name, return_type=True)
 
     docstring = imported_object.__doc__
 
@@ -238,14 +231,7 @@ def get_package_location(package_name):
 
 def get_object_file(object_name):
     
-    try:
-        imported_object = importlib.import_module(object_name)
-    except:
-        module_list = object_name.split('.')
-        object_name = module_list.pop()
-        module_name = '.'.join(module_list)
-        imported_module = importlib.import_module(module_name)
-        imported_object = getattr(imported_module, object_name)
+    imported_object, object_type = get_object(object_name, return_type=True)
 
     object_file = imported_object.__file__
 
@@ -255,14 +241,7 @@ def get_object_file(object_name):
 
 def get_object_signature(object_name):
     
-    try:
-        imported_object = importlib.import_module(object_name)
-    except:
-        module_list = object_name.split('.')
-        object_name = module_list.pop()
-        module_name = '.'.join(module_list)
-        imported_module = importlib.import_module(module_name)
-        imported_object = getattr(imported_module, object_name)
+    imported_object, object_type = get_object(object_name, return_type=True)
 
     signature = inspect.signature(imported_object)        
 
