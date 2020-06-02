@@ -270,6 +270,18 @@ def get_object(object_name):
 
 
 
+def get_object_type(object_name):
 
+    pass
+
+
+
+
+
+
+
+
+
+    
 
 

@@ -2,8 +2,9 @@
 docstrung
 """
 
-from docstrung import archive
-from docstrung import get
-from docstrung import parse
-from docstrung import write
-#from docstrung import report
+from . import archive
+from . import get
+from . import parse
+from . import write
+# from . import report
+# from . import docstringer

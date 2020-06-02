@@ -1,5 +1,5 @@
 import inspect
-from docstrung import get
+from . import get
 from collections import OrderedDict
 from numpydoc.docscrape import FunctionDoc, ClassDoc
 
@@ -60,21 +60,21 @@ def parse_docstring(object_name):
 
     docstring_sections = OrderedDict()
     docstring_sections['short_description'] = ['Short description of ' + object_name]
-    docstring_sections['long_description'] = []
-    docstring_sections['parameters'] = parse_signature(object_name)
-    docstring_sections['returns'] = OrderedDict()
-    docstring_sections['yields'] = OrderedDict()
-    docstring_sections['receives'] = OrderedDict()
-    docstring_sections['raises'] = OrderedDict()
-    docstring_sections['warns'] = OrderedDict()
-    docstring_sections['other_parameters'] = OrderedDict()
-    docstring_sections['attributes'] = OrderedDict()
-    docstring_sections['methods'] = OrderedDict()
-    docstring_sections['see_also'] = OrderedDict()
-    docstring_sections['notes'] = []
-    docstring_sections['warnings'] = []
-    docstring_sections['references'] = []
-    docstring_sections['examples'] = []
+    docstring_sections['long_description']  = []
+    docstring_sections['parameters']        = parse_signature(object_name)
+    docstring_sections['returns']           = OrderedDict()
+    docstring_sections['yields']            = OrderedDict()
+    docstring_sections['receives']          = OrderedDict()
+    docstring_sections['raises']            = OrderedDict()
+    docstring_sections['warns']             = OrderedDict()
+    docstring_sections['other_parameters']  = OrderedDict()
+    docstring_sections['attributes']        = OrderedDict()
+    docstring_sections['methods']           = OrderedDict()
+    docstring_sections['see_also']          = OrderedDict()
+    docstring_sections['notes']             = []
+    docstring_sections['warnings']          = []
+    docstring_sections['references']        = []
+    docstring_sections['examples']          = []
 
 
     if parsable:        

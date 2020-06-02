@@ -1,6 +1,5 @@
-from docstrung import get
-from docstrung import parse
-from string import Template
+from . import get
+from . import parse
 
 
 
