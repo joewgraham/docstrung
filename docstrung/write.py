@@ -1,31 +1,22 @@
 from . import get
 from . import parse
+from . import template
+
+
+class docstringWriter:
+
+    def __init__(self, object_name, template, initial_newline=True, spacer='    '):
+
+
+        self.new_docstring = template.template_string.format(**template.template_dict)
+        
+        
+        return new_docstring
 
 
 
-# Template for function docstrings
-function_template = ''    
-function_template += '{short_description}' 
-function_template += '{long_description}' 
-function_template += '{parameters}'
-function_template += '{returns}'
-function_template += '{yields}'
-function_template += '{receives}'
-function_template += '{raises}'
-function_template += '{warns}'
-function_template += '{other_parameters}'
-function_template += '{attributes}'
-function_template += '{methods}'
-function_template += '{see_also}'
-function_template += '{notes}'
-function_template += '{warnings}'
-function_template += '{references}'
-function_template += '{examples}'
-function_template += '{index}'
 
-
-
-def write_docstring(object_name, initial_newline=True, spacer='    ', template=function_template):
+def write_docstring(object_name, initial_newline=True, spacer='    '):
 
     parsed_docstring = parse.parse_docstring(object_name)
 
