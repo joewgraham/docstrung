@@ -270,13 +270,19 @@ def get_object_signature(object_name):
 
 
 
-def get_object(object_name, return_type=False):
+def get_object(object_name, return_type=True):
     
     try:
 
-        # Handles modules
+        # Handles subpackages and modules
         imported_object = importlib.import_module(object_name)
-        object_type = type(imported_object)
+        
+        file_loc = imported_object.__file__
+        object_type = ''
+        if file_loc.endswith('__init__.py'):
+            object_type += 'package'
+        else:
+            object_type += 'module'
     
     except:
         
@@ -289,7 +295,7 @@ def get_object(object_name, return_type=False):
 
             imported_module = importlib.import_module(module_name)
             imported_object = getattr(imported_module, object_name)
-            object_type = type(imported_object)
+            object_type = type(imported_object).__name__
     
         except:
             
@@ -300,7 +306,7 @@ def get_object(object_name, return_type=False):
             imported_module = importlib.import_module(module_name)
             imported_class = getattr(imported_module, class_name)
             imported_object = getattr(imported_class, object_name)
-            object_type = type(imported_object)
+            object_type = "method"
 
 
     if return_type:

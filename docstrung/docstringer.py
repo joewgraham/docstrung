@@ -32,9 +32,7 @@ def docstringer(object_name):
 
     imported_object, object_type = get.get_object(object_name, return_type=True)
 
-    print('type:', type(imported_object))
-    print('type:', object_type)
-
+    print('object_type:', object_type)
     #print()
 
 
@@ -44,7 +42,7 @@ print()
 for subpackage in get.get_all_subpackages('netpyne'):
 
     docstringer(subpackage)
-    print('type: subpackage')
+    print('actual type: subpackage')
 
 
 
@@ -53,7 +51,7 @@ print()
 for module in get.get_all_modules('netpyne'):
 
     docstringer(module)
-    print('type: module')
+    print('actual type: module')
 
 
 
@@ -62,7 +60,7 @@ print()
 for function in get.get_all_functions('netpyne'):
 
     docstringer(function)
-    print('type: function')
+    print('actual type: function')
 
 
 
@@ -71,7 +69,7 @@ print()
 for classi in get.get_all_classes('netpyne'):
 
     docstringer(classi)
-    print('type: class')
+    print('actual type: class')
 
 
 
@@ -80,7 +78,7 @@ print()
 for method in get.get_all_methods('netpyne'):
 
     docstringer(method)
-    print('type: method')
+    print('actual type: method')
 
 
 
