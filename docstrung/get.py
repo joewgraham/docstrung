@@ -255,33 +255,42 @@ def get_object_signature(object_name):
 
 
 
-def get_object(object_name):
+def get_object(object_name, return_type=False):
     
     try:
         imported_object = importlib.import_module(object_name)
+        object_type = type(imported_object)
     except:
         module_list = object_name.split('.')
         object_name = module_list.pop()
         module_name = '.'.join(module_list)
         imported_module = importlib.import_module(module_name)
         imported_object = getattr(imported_module, object_name)
+        object_type = type(imported_object)
 
-    return imported_object
+    if return_type:
+        return imported_object, object_type
+    else:
+        return imported_object
 
 
 
 def get_object_type(object_name):
 
-    pass
+    imported_object, object_type = get_object(object_name, return_type=True)
 
-
-
-
-
-
-
-
+    return object_type
 
     
+
+
+
+
+
+
+
+
+
+
 
 
