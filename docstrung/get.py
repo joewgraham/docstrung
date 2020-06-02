@@ -4,7 +4,7 @@ import os
 
 
 
-def get_subpackages(package_name): 
+def get_subpackages(package_name, include_package=True): 
     """
     From a given package name, return a list of subpackage names 
     """
@@ -24,43 +24,64 @@ def get_subpackages(package_name):
 
     subpackages.sort()
 
+    if include_package:
+        subpackages = [package_name + '.' + subpackage for subpackage in subpackages]
+
     return subpackages
 
 
 
-def get_all_modules(package_name):
+def get_all_modules(package_name, return_subpackages=False):
     """
     From the given package, return a list of all module names from all subpackages.
+
+    This function could benefit from recursion...
     """
 
     modules = []
-    items = get_subpackages(package_name)
+    subpackages = []
+    items = get_subpackages(package_name, include_package=True)
 
     for item in items:
-        item = package_name + '.' + item
-        subitems = get_subpackages(item)
+        subitems = get_subpackages(item, include_package=True)
 
         if not subitems:
             modules.append(item) 
         
         else:
+            subpackages.append(item)
             for subitem in subitems:
-                subitem = item + '.' + subitem
-                subsubitems = get_subpackages(subitem)
+                subsubitems = get_subpackages(subitem, include_package=True)
 
                 if not subsubitems:
                     modules.append(subitem)
-        
+
                 else:
+                    subpackages.append(subitem)
                     for subsubitem in subsubitems:
-                        subsubitem = subitem + '.' + subsubitem
-                        subsubsubitems = get_subpackages(subsubitem)
+                        subsubsubitems = get_subpackages(subsubitem, include_package=True)
 
                         if not subsubsubitems:
                             modules.append(subsubitem)
+                        else:
+                            subpackages.append(subsubitem)
 
     modules.sort()
-    return modules
+    subpackages.sort()
+
+    if return_subpackages:
+        return modules, subpackages
+    else:
+        return modules
+
+
+
+def get_all_subpackages(package_name):
+
+    modules, subpackages = get_all_modules(package_name, return_subpackages=True)
+
+    return subpackages
+
 
 
 
@@ -100,12 +121,7 @@ def get_all_functions(package_name, include_private=True, include_module=True):
 
     for module in modules:
         
-        new_funcs = get_functions(module, include_private=include_private, include_module=False)
-        if include_module:
-            new_funcs = get_functions(module, include_private=include_private, include_module=True)
-        else:
-            new_funcs = get_functions(module, include_private=include_private, include_module=False)
-
+        new_funcs = get_functions(module, include_private=include_private, include_module=include_module)
         functions.extend(new_funcs)
 
     return functions
@@ -144,7 +160,6 @@ def get_all_classes(package_name, include_private=True, include_module=True):
     """
 
     classes = []
-
     modules = get_all_modules(package_name)
 
     for module in modules:
@@ -258,15 +273,35 @@ def get_object_signature(object_name):
 def get_object(object_name, return_type=False):
     
     try:
+
+        # Handles modules
         imported_object = importlib.import_module(object_name)
         object_type = type(imported_object)
+    
     except:
+        
+        # Handles functions and classes
         module_list = object_name.split('.')
         object_name = module_list.pop()
         module_name = '.'.join(module_list)
-        imported_module = importlib.import_module(module_name)
-        imported_object = getattr(imported_module, object_name)
-        object_type = type(imported_object)
+        
+        try:
+
+            imported_module = importlib.import_module(module_name)
+            imported_object = getattr(imported_module, object_name)
+            object_type = type(imported_object)
+    
+        except:
+            
+            # Handles methods
+            object_name = module_list.pop()
+            class_name = module_list.pop()
+            module_name = '.'.join(module_list)
+            imported_module = importlib.import_module(module_name)
+            imported_class = getattr(imported_module, class_name)
+            imported_object = getattr(imported_class, object_name)
+            object_type = type(imported_object)
+
 
     if return_type:
         return imported_object, object_type

@@ -1,8 +1,88 @@
+from . import get
+
+
+def docstringer_subpackage():
+    pass
+
+def docstringer_module():
+    pass
+
+def docstringer_function():
+    pass
+
+def docstringer_class():
+    pass
+
+def docstringer_method():
+    pass
+
+
+
+
+
+
+
 
 
 def docstringer(object_name):
 
-    pass
+    print()
+    print(object_name)
+    print('============================================================')
+
+    imported_object, object_type = get.get_object(object_name, return_type=True)
+
+    print('type:', type(imported_object))
+    print('type:', object_type)
+
+    #print()
+
+
+
+print(get.get_all_subpackages('netpyne'))
+print()
+for subpackage in get.get_all_subpackages('netpyne'):
+
+    docstringer(subpackage)
+    print('type: subpackage')
+
+
+
+print(get.get_all_modules('netpyne'))
+print()
+for module in get.get_all_modules('netpyne'):
+
+    docstringer(module)
+    print('type: module')
+
+
+
+print(get.get_all_functions('netpyne'))
+print()
+for function in get.get_all_functions('netpyne'):
+
+    docstringer(function)
+    print('type: function')
+
+
+
+print(get.get_all_classes('netpyne'))
+print()
+for classi in get.get_all_classes('netpyne'):
+
+    docstringer(classi)
+    print('type: class')
+
+
+
+print(get.get_all_methods('netpyne'))
+print()
+for method in get.get_all_methods('netpyne'):
+
+    docstringer(method)
+    print('type: method')
+
+
 
 
 

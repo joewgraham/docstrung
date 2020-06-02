@@ -7,11 +7,8 @@ class docstringWriter:
 
     def __init__(self, object_name, template, initial_newline=True, spacer='    '):
 
-
         self.new_docstring = template.template_string.format(**template.template_dict)
         
-        
-        return new_docstring
 
 
 
