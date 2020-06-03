@@ -13,6 +13,7 @@ from . import write
 
 initial_newline = True 
 spacer = '    '
+include_private = False
 
 
 def docstringer_subpackage():
@@ -25,26 +26,17 @@ def docstringer_function(function_name, initial_newline=initial_newline, spacer=
     
     new_docstring = write.write_docstring(function_name, initial_newline=initial_newline, spacer=spacer)
 
-    #print(5 * '\n')
-    #print(new_docstring)
-    #print(5 * '\n')
-
-
 
 def docstringer_class(class_name, initial_newline=initial_newline, spacer=spacer):
     
     new_docstring = write.write_docstring(class_name, initial_newline=initial_newline, spacer=spacer)
 
-    print(5 * '\n')
-    print(new_docstring)
-    print(5 * '\n')
-
-
-
 
 def docstringer_method(method_name, initial_newline=initial_newline, spacer=spacer):
 
     new_docstring = write.write_docstring(method_name, initial_newline=initial_newline, spacer=spacer)
+
+    
 
 
 
@@ -73,7 +65,7 @@ def docstringer(object_name, initial_newline=initial_newline, spacer=spacer):
     
     if object_type == 'package':
 
-        subpackages = get.get_all_subpackages(object_name)
+        subpackages = get.get_all_subpackages(object_name, include_private=include_private)
         print()
         print('subpackages:', subpackages)
         print()
@@ -81,7 +73,7 @@ def docstringer(object_name, initial_newline=initial_newline, spacer=spacer):
             print()
             print('subpackage: ', subpackage)
 
-        modules = get.get_all_modules(object_name)
+        modules = get.get_all_modules(object_name, include_private=include_private)
         print()
         print('modules:', modules)
         print()
@@ -89,7 +81,7 @@ def docstringer(object_name, initial_newline=initial_newline, spacer=spacer):
             print()
             print('module:', module)
 
-        functions = get.get_all_functions(object_name)
+        functions = get.get_all_functions(object_name, include_private=include_private)
         print()
         print('functions:', functions)
         print()
@@ -98,7 +90,7 @@ def docstringer(object_name, initial_newline=initial_newline, spacer=spacer):
             print('function:', function)
             docstringer_function(function, initial_newline=initial_newline, spacer=spacer)
 
-        classes = get.get_all_classes(object_name)
+        classes = get.get_all_classes(object_name, include_private=include_private)
         print()
         print('classes:', classes)
         print()
@@ -107,14 +99,14 @@ def docstringer(object_name, initial_newline=initial_newline, spacer=spacer):
             print('class:', classi)
             docstringer_class(classi, initial_newline=initial_newline, spacer=spacer)
 
-
-        methods = get.get_all_methods(object_name)
+        methods = get.get_all_methods(object_name, include_private=include_private)
         print()
         print('methods:', methods)
         print()
         for method in methods:
             print()
             print('method:', method)
+            docstringer_method(method, initial_newline=initial_newline, spacer=spacer)
 
 
 

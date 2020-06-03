@@ -79,6 +79,8 @@ def write_docstring(object_name, initial_newline=True, spacer='    '):
         pass
 
     if parsed_docstring['methods']:
+        print('============================================================================================================')
+        print('Missing some parsed methods')
         pass
 
     if parsed_docstring['see_also']:

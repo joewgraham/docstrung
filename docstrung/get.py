@@ -4,7 +4,7 @@ import os
 
 
 
-def get_subpackages(package_name, include_package=True): 
+def get_subpackages(package_name, include_package=True, include_private=True): 
     """
     From a given package name, return a list of subpackage names 
     """
@@ -12,6 +12,8 @@ def get_subpackages(package_name, include_package=True):
     package = importlib.import_module(package_name)
     items = package.__dir__()
     items = [item for item in items if not item.startswith('__')]
+    if not include_private:
+        items = [item for item in items if not item.startswith('_')]
     subpackages = []
 
     for item in items:
@@ -31,7 +33,7 @@ def get_subpackages(package_name, include_package=True):
 
 
 
-def get_all_modules(package_name, return_subpackages=False):
+def get_all_modules(package_name, return_subpackages_list=False, include_private=True):
     """
     From the given package, return a list of all module names from all subpackages.
 
@@ -69,16 +71,16 @@ def get_all_modules(package_name, return_subpackages=False):
     modules.sort()
     subpackages.sort()
 
-    if return_subpackages:
+    if return_subpackages_list:
         return modules, subpackages
     else:
         return modules
 
 
 
-def get_all_subpackages(package_name):
+def get_all_subpackages(package_name, include_private=True):
 
-    modules, subpackages = get_all_modules(package_name, return_subpackages=True)
+    modules, subpackages = get_all_modules(package_name, return_subpackages_list=True, include_private=include_private)
 
     return subpackages
 
@@ -243,7 +245,10 @@ def get_object_signature(object_name):
     
     imported_object, object_type = get_object(object_name, return_type=True)
 
-    signature = inspect.signature(imported_object)        
+    try: 
+        signature = inspect.signature(imported_object)    
+    except:
+        signature = None
 
     return signature
 
@@ -275,6 +280,7 @@ def get_object(object_name, return_type=True):
             imported_module = importlib.import_module(module_name)
             imported_object = getattr(imported_module, object_name)
             object_type = type(imported_object).__name__
+            #print('\n\nobject_type:\n', object_type, '\n\n')
     
         except:
             
@@ -285,7 +291,7 @@ def get_object(object_name, return_type=True):
             imported_module = importlib.import_module(module_name)
             imported_class = getattr(imported_module, class_name)
             imported_object = getattr(imported_class, object_name)
-            object_type = "method"
+            object_type = 'method'
 
 
     if return_type:

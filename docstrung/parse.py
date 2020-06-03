@@ -1,6 +1,7 @@
 import inspect
 from collections import OrderedDict
-from numpydoc.docscrape import FunctionDoc, ClassDoc
+from numpydoc.docscrape import FunctionDoc
+from numpydoc.docscrape import ClassDoc
 from . import get
 from .template import docstringTemplate
 from .template import default_template_dict
@@ -21,29 +22,45 @@ class docstringParser:
 
 def parse_parameters(object_name):
 
-    signature = get.get_object_signature(object_name)
     params_dict = OrderedDict()
 
-    for param_name in signature.parameters:
+    signature = get.get_object_signature(object_name)
+    
+    if signature:
 
-        params_dict[param_name] = {}
-        param = signature.parameters[param_name]
-        params_dict[param_name]['default'] = param.default
-        params_dict[param_name]['description'] = 'Short description of ' + param_name
-        
-        if param.default is None:
-            params_dict[param_name]['type'] = None
-        else:
-            params_dict[param_name]['type'] = type(param.default).__name__
-        
-        if type(param.default) == type(inspect._empty):
-            params_dict[param_name]['default'] = 'required'
-            params_dict[param_name]['type'] = ''
-        elif params_dict[param_name]['type'] == 'str':
-            params_dict[param_name]['default'] = "'" + params_dict[param_name]['default'] + "'"
-        else:
-            params_dict[param_name]['default'] = str(param.default)
+        imported_object, object_type = get.get_object(object_name, return_type=True)
 
+
+
+        if object_type == 'method':
+            print('-----------------------------------------------------------------------------------------')
+            print('signature:\n', signature)
+
+        if object_type == 'type':
+            print('-----------------------------------------------------------------------------------------')
+            print('signature:\n', signature)
+
+
+
+        for param_name in signature.parameters:
+
+            params_dict[param_name] = {}
+            param = signature.parameters[param_name]
+            params_dict[param_name]['default'] = param.default
+            params_dict[param_name]['description'] = 'Short description of ' + param_name
+            
+            if param.default is None:
+                params_dict[param_name]['type'] = None
+            else:
+                params_dict[param_name]['type'] = type(param.default).__name__
+            
+            if type(param.default) == type(inspect._empty):
+                params_dict[param_name]['default'] = 'required'
+                params_dict[param_name]['type'] = ''
+            elif params_dict[param_name]['type'] == 'str':
+                params_dict[param_name]['default'] = "'" + params_dict[param_name]['default'] + "'"
+            else:
+                params_dict[param_name]['default'] = str(param.default)
 
     return params_dict
 
@@ -52,26 +69,28 @@ def parse_parameters(object_name):
 def parse_docstring(object_name, template=default_docstringTemplate):
 
     imported_object, object_type = get.get_object(object_name, return_type=True)
-    print()
-    print('parse_docstring imported_object:', imported_object)
-    print()
+    #print()
+    #print('parse_docstring imported_object:', imported_object)
+    #print()
 
     try:
         parsed = FunctionDoc(imported_object)
-        
-        print()
-        print(object_name)
-        print('=============================')
-        print('Successfully parsed docstring')
 
         if parsed['Parameters']:
             print('  Parameters were parsed.')
             parsable = True
         else:
-            print('  Parameters were not parsed.')
+            print('  Parameters weren"t parsed!!')
+            parsable = False
+
+        if parsed['Methods']:
+            print('  Methods were parsed.')
+            parsable = True
+        else:
+            print('  Methods weren"t parsed!!')
             parsable = False
     except:
-        print('Parsing failed.')
+        print('  Parsing failed!!!! -------------------------------------------------------------------------')
         parsable = False
 
 
@@ -105,37 +124,54 @@ def parse_docstring(object_name, template=default_docstringTemplate):
         docstring_sections['returns']['description'] = param.desc
     
     for param in parsed['Yields']:
-        docstring_sections['yields'][param.name] = {'type': param.type, 'description': param.desc}
+        #docstring_sections['yields'][param.name] = {'type': param.type, 'description': param.desc}
+        pass
     
     for param in parsed['Receives']:
-        docstring_sections['receives'][param.name] = {'type': param.type, 'description': param.desc}
-    
+        #docstring_sections['receives'][param.name] = {'type': param.type, 'description': param.desc}
+        pass
+ 
     for param in parsed['Raises']:
-        docstring_sections['raises'][param.name] = {'type': param.type, 'description': param.desc}
-    
+        #docstring_sections['raises'][param.name] = {'type': param.type, 'description': param.desc}
+        pass
+ 
     for param in parsed['Warns']:
-        docstring_sections['warns'][param.name] = {'type': param.type, 'description': param.desc}
-
+        #docstring_sections['warns'][param.name] = {'type': param.type, 'description': param.desc}
+        pass
+ 
     for param in parsed['Other Parameters']:
-        docstring_sections['other_parameters'][param.name] = {'type': param.type, 'description': param.desc}
-
+        #docstring_sections['other_parameters'][param.name] = {'type': param.type, 'description': param.desc}
+        pass
+ 
     for param in parsed['Attributes']:
-        docstring_sections['attributes'][param.name] = {'type': param.type, 'description': param.desc}    
+        #docstring_sections['attributes'][param.name] = {'type': param.type, 'description': param.desc}    
+        pass
     
     for param in parsed['Methods']:
-        docstring_sections['methods'][param.name] = {'type': param.type, 'description': param.desc}
+        #print()
+        #print('param:', param)
+        #print()
+        #docstring_sections['methods'][param.name] = {'type': param.type, 'description': param.desc}
+        docstring_sections['methods']['name'] = param.name
+        docstring_sections['methods']['type'] = param.type
+        docstring_sections['methods']['description'] = param.desc
+        pass
     
     for param in parsed['See Also']:            
-        docstring_sections['see_also'][param[0][0][0]] = {'type': None, 'description': param[0][0][1]}
+        #docstring_sections['see_also'][param[0][0][0]] = {'type': None, 'description': param[0][0][1]}
+        pass
 
     for param in parsed['Notes']:
-        docstring_sections['notes'][param.name] = {'type': param.type, 'description': param.desc}
+        #docstring_sections['notes'][param.name] = {'type': param.type, 'description': param.desc}
+        pass
     
     for param in parsed['Warnings']:
-        docstring_sections['warnings'][param.name] = {'type': param.type, 'description': param.desc}
+        #docstring_sections['warnings'][param.name] = {'type': param.type, 'description': param.desc}
+        pass
 
     for param in parsed['References']:
-        docstring_sections['references'][param.name] = {'type': param.type, 'description': param.desc}
+        #docstring_sections['references'][param.name] = {'type': param.type, 'description': param.desc}
+        pass
 
     docstring_sections['examples'] = parsed['Examples']
 
