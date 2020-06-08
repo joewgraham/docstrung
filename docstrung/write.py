@@ -52,6 +52,40 @@ def write_docstring(object_name, initial_newline=True, spacer='    '):
 
         new_docstring += '\n'
 
+
+
+
+
+
+
+
+    if parsed_docstring['methods']:
+
+        new_docstring += spacer + 'Methods\n'
+        new_docstring += spacer + '----------\n'
+
+        for param, param_dict in parsed_docstring['methods'].items():
+
+            new_docstring += spacer + param + ' : ' + str(param_dict['type']) + '\n'
+            new_docstring += spacer + spacer + param_dict['description'] + '\n'
+
+            if not 'default' in param_dict['description']:
+                new_docstring += spacer + spacer + '**Default**: ``' + param_dict['default'] + '``\n'
+                    
+            if not 'options' in param_dict['description'] and not 'required' in param_dict['default']:
+                new_docstring += spacer + spacer + '**Options**: \n '
+            
+            new_docstring += '\n'
+
+        new_docstring += '\n'
+
+
+
+
+
+
+
+
     if parsed_docstring['returns']:
 
         new_docstring += spacer + 'Returns\n'
@@ -80,7 +114,10 @@ def write_docstring(object_name, initial_newline=True, spacer='    '):
 
     if parsed_docstring['methods']:
         print('============================================================================================================')
-        print('Missing some parsed methods')
+        print('Missing some parsed methods (see write.py)')
+        print("parsed_docstring['methods']:\n\n")
+        print(parsed_docstring['methods'])
+        print('\n\n')
         pass
 
     if parsed_docstring['see_also']:

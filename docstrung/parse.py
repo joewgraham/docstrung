@@ -1,98 +1,218 @@
+
 import inspect
 from collections import OrderedDict
-from numpydoc.docscrape import FunctionDoc
-from numpydoc.docscrape import ClassDoc
 from . import get
-from .template import docstringTemplate
-from .template import default_template_dict
+from . import template
+from . import parse
+
+
+ObjectDict    = template.ObjectDict
+AttributeDict = template.AttributeDict
+ParameterDict = template.ParameterDict
+ReturnsDict   = template.ReturnsDict
+YieldsDict    = template.YieldsDict
+RaisesDict    = template.RaisesDict
+FunctionDict  = template.FunctionDict
+MethodDict    = template.MethodDict
+ClassDict     = template.ClassDict
+ModuleDict    = template.ModuleDict
+PackageDict   = template.PackageDict
 
 
 
-default_docstringTemplate = docstringTemplate(sections_dict=default_template_dict)
+class DocstringParser:
+    
+    def __init__(self, object_name, parser_function=template.parser):
 
+        imported_object, object_type = get.get_object(object_name, return_type=True)
 
+        self.object_name = object_name
+        self.object_type = object_type
+        self.object = imported_object
+        self.original_docstring = get.get_docstring(object_name)
+        
+        if object_type == 'package':
+            self.object_dict = template.PackageDict()
+        elif object_type == 'module':
+            self.object_dict = template.ModuleDict()
+        elif object_type == 'class':
+            self.object_dict = template.ClassDict()
+        elif object_type == 'function' or object_type == 'method':
+            self.object_dict = template.FunctionDict()
+            self.object_dict['parameters'] = parse_parameters(object_name)
+        else:
+            self.object_dict = template.ObjectDict()
 
-class docstringParser:
+        self.object_dict['name']   = object_name 
+        self.object_dict['type']   = object_type
+        self.object_dict['object'] = imported_object
+        self.object_dict['original_docstring'] = self.original_docstring
 
-    def __init__(self):
-
-        pass
+        parser_function = getattr(parse, parser_function)
+        self.object_dict = parser_function(self.object_dict)
 
 
 
 def parse_parameters(object_name):
 
-    params_dict = OrderedDict()
-
+    parameters = []
     signature = get.get_object_signature(object_name)
     
     if signature:
 
         imported_object, object_type = get.get_object(object_name, return_type=True)
 
-
-
-        if object_type == 'method':
-            print('-----------------------------------------------------------------------------------------')
-            print('signature:\n', signature)
-
-        if object_type == 'type':
-            print('-----------------------------------------------------------------------------------------')
-            print('signature:\n', signature)
-
-
-
         for param_name in signature.parameters:
 
-            params_dict[param_name] = {}
+            ParameterDict = template.ParameterDict()
+            ParameterDict['name'] = param_name
             param = signature.parameters[param_name]
-            params_dict[param_name]['default'] = param.default
-            params_dict[param_name]['description'] = 'Short description of ' + param_name
+            ParameterDict['default'] = param.default
+            ParameterDict['description'] = 'Short description of ' + param_name
             
             if param.default is None:
-                params_dict[param_name]['type'] = None
+                ParameterDict['type'] = 'None'
             else:
-                params_dict[param_name]['type'] = type(param.default).__name__
+                ParameterDict['type'] = type(param.default).__name__
             
             if type(param.default) == type(inspect._empty):
-                params_dict[param_name]['default'] = 'required'
-                params_dict[param_name]['type'] = ''
-            elif params_dict[param_name]['type'] == 'str':
-                params_dict[param_name]['default'] = "'" + params_dict[param_name]['default'] + "'"
+                ParameterDict['default'] = 'required'
+                ParameterDict['type'] = ''
+            
+            elif ParameterDict['type'] == 'str':
+                ParameterDict['default'] = "'" + ParameterDict['default'] + "'"
+            
             else:
-                params_dict[param_name]['default'] = str(param.default)
+                ParameterDict['default'] = str(param.default)
 
-    return params_dict
+            parameters.append(ParameterDict)
+
+
+    return parameters
 
 
 
-def parse_docstring(object_name, template=default_docstringTemplate):
+def default_parser(object_dict):
+
+    from docstring_parser import parse
+
+    object_type = object_dict['type']
+    original_docstring = object_dict['original_docstring']
+
+    parsed_docstring = None
+    if original_docstring:
+        parsed_docstring = parse(original_docstring)
+
+    if parsed_docstring:
+
+        if parsed_docstring.short_description:
+            object_dict['description'] = parsed_docstring.short_description
+
+        if parsed_docstring.long_description:
+            object_dict['long_description'] = parsed_docstring.long_description
+
+        if object_type == 'package':
+            pass
+
+        elif object_type == 'module':
+            pass
+
+        elif object_type == 'class':
+            pass
+
+        elif object_type in ['function', 'method']:
+            
+            # replace attributes
+            
+            # replace parameters
+            for parsed_param in parsed_docstring.params:
+
+                for object_param in object_dict['parameters']:
+
+                    if parsed_param.arg_name == object_param['name']:
+
+                        if parsed_param.description:
+                            object_param['description'] = parsed_param.description
+                        if parsed_param.default:
+                            object_param['default'] = parsed_param.default
+                        if parsed_param.type_name:
+                            object_param['type'] = parsed_param.type_name
+
+            # replace returns
+
+            # replace yields
+
+            # replace raises
+
+
+        elif object_type == 'attribute':
+            pass
+
+        else:
+            pass
+
+
+    return object_dict
+
+
+
+def parse_docstring(object_name, parameters=None): 
 
     imported_object, object_type = get.get_object(object_name, return_type=True)
-    #print()
-    #print('parse_docstring imported_object:', imported_object)
-    #print()
 
-    try:
+    if object_type == 'function':
+
         parsed = FunctionDoc(imported_object)
+        print('Function')
+        print('=============')
 
         if parsed['Parameters']:
             print('  Parameters were parsed.')
-            parsable = True
         else:
             print('  Parameters weren"t parsed!!')
-            parsable = False
 
         if parsed['Methods']:
             print('  Methods were parsed.')
-            parsable = True
         else:
             print('  Methods weren"t parsed!!')
-            parsable = False
-    except:
-        print('  Parsing failed!!!! -------------------------------------------------------------------------')
-        parsable = False
+            
+    elif object_type == 'type':  #e.g. elif object_type == 'class', but class is protected
+        
+        parsed = ClassDoc(imported_object)
+        print('Class')
+        print('=============')
+        
+        if parsed['Parameters']:
+            print('  Parameters were parsed.')
+        else:
+            print('  Parameters weren"t parsed!!')
 
+        if parsed['Methods']:
+            print('  Methods were parsed.')
+        else:
+            print('  Methods weren"t parsed!!')
+
+    elif object_type == 'method':
+
+        parsed = FunctionDoc(imported_object)
+        print('Method')
+        print('=============')
+
+        if parsed['Parameters']:
+            print('  Parameters were parsed.')
+        else:
+            print('  Parameters weren"t parsed!!')
+
+        if parsed['Methods']:
+            print('  Methods were parsed.')
+        else:
+            print('  Methods weren"t parsed!!')
+
+    else:
+
+        parsed = None
+        print(object_type)
+        print('=============')
 
     docstring_sections = template.template_dict
     
@@ -104,6 +224,7 @@ def parse_docstring(object_name, template=default_docstringTemplate):
     if parsed['Extended Summary']:
         docstring_sections['long_description '] = parsed['Extended Summary']
 
+
     docstring_sections['parameters'] = parse_parameters(object_name)
     for param in docstring_sections['parameters']:
         
@@ -111,12 +232,15 @@ def parse_docstring(object_name, template=default_docstringTemplate):
 
             if parsed['parameters'][param]['type']:
                 docstring_sections['parameters'][param]['type'] = parsed['parameters'][param]['type']
+                print('replaced')
 
             if parsed['parameters'][param]['default']:
                 docstring_sections['parameters'][param]['default'] = parsed['parameters'][param]['default']
+                print('replaced')
 
             if parsed['parameters'][param]['description']:
                 docstring_sections['parameters'][param]['description'] = parsed['parameters'][param]['description']
+                print('replaced')
 
     for param in parsed['Returns']:
         docstring_sections['returns']['name'] = param.name
@@ -146,16 +270,45 @@ def parse_docstring(object_name, template=default_docstringTemplate):
     for param in parsed['Attributes']:
         #docstring_sections['attributes'][param.name] = {'type': param.type, 'description': param.desc}    
         pass
-    
-    for param in parsed['Methods']:
-        #print()
-        #print('param:', param)
-        #print()
-        #docstring_sections['methods'][param.name] = {'type': param.type, 'description': param.desc}
-        docstring_sections['methods']['name'] = param.name
-        docstring_sections['methods']['type'] = param.type
-        docstring_sections['methods']['description'] = param.desc
-        pass
+        print()
+        print('Attributes params')
+        print(param)
+
+
+
+
+
+
+
+
+
+
+
+    docstring_sections['methods'] = parse_parameters(object_name)
+    for param in docstring_sections['methods']:
+        
+        if param in parsed:
+
+            if parsed['methods'][param]['type']:
+                docstring_sections['methods'][param]['type'] = parsed['methods'][param]['type']
+                print('replaced')
+
+            if parsed['methods'][param]['default']:
+                docstring_sections['methods'][param]['default'] = parsed['methods'][param]['default']
+                print('replaced')
+
+            if parsed['methods'][param]['description']:
+                docstring_sections['methods'][param]['description'] = parsed['methods'][param]['description']
+                print('replaced')
+
+
+
+
+
+
+
+
+
     
     for param in parsed['See Also']:            
         #docstring_sections['see_also'][param[0][0][0]] = {'type': None, 'description': param[0][0][1]}

@@ -4,6 +4,28 @@ import os
 
 
 
+
+
+
+def get_napoleon_parse(docstring):
+
+    from sphinx.ext.napoleon import docstring as sphinx_docstring
+
+    napoleon_parse = sphinx_docstring.NumpyDocstring(docstring)
+
+    return napoleon_parse
+
+
+
+
+
+
+
+
+
+
+
+
 def get_subpackages(package_name, include_package=True, include_private=True): 
     """
     From a given package name, return a list of subpackage names 

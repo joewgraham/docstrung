@@ -4,16 +4,23 @@ Fix: **Default**: ``required``
 Fix: second scipt should have ``
     script : 
         Short description of script
-
 """
 
 from . import get
 from . import write
+from . import template
+from . import parse
 
 
-initial_newline = True 
-spacer = '    '
-include_private = False
+initial_newline = template.initial_newline
+spacer          = template.spacer
+include_private = template.include_private
+
+
+
+
+
+
 
 
 def docstringer_subpackage():
@@ -37,6 +44,9 @@ def docstringer_method(method_name, initial_newline=initial_newline, spacer=spac
     new_docstring = write.write_docstring(method_name, initial_newline=initial_newline, spacer=spacer)
 
     
+
+
+
 
 
 
@@ -115,290 +125,18 @@ def docstringer(object_name, initial_newline=initial_newline, spacer=spacer):
 
 
 
-# """
-# docstringer
 
-# Requires docstring-parser
-# >>> pip install docstring-parser
-# """
 
-# import sys
-# import neuron
-# import netpyne
-# import importlib
-# import inspect
 
-# import os
-# import shutil
-# import pkgutil
-# from docstring_parser import parse
-# from collections import OrderedDict 
-# from pprint import pprint
-# from types import ModuleType, FunctionType, MethodType
 
 
-# # Get the directory where this file resides
-# docstringer_dir = os.path.dirname(os.path.abspath(__file__))
 
-# print('sys.path:', sys.path)
-# # Use the local files rather than those from any existing NetPyNE installation
-# sys.path.insert(0, os.path.dirname(os.getcwd()))
-# print('sys.path:', sys.path)
 
 
 
-# def find_all(main, sub):
-#     """Finds all instances of a sub-string in a string and returns a list of their start indexes.
-#     """
-    
-#     indexes = []
-#     start = main.find(sub, 0)
-#     while start != -1: 
-#         indexes.append(start)
-#         start = main.find(sub, start+1)
 
-#     return indexes
 
 
-
-# def archive_package(package_dir='auto', archive_dir='auto', overwrite=False, cur_dir=docstringer_dir):
-#     """Archives the package directory because it will be modified.
-#     """
-
-#     from datetime import datetime
-    
-#     date = datetime.today().strftime('%Y%m%d')
-
-#     # 'auto' assumes this file is in `[package]/[doc]/`
-#     # and your package is in `[package]/[package]/`
-    
-#     if package_dir == 'auto':
-#         software_dir = os.path.split(cur_dir)[0]
-#         package = os.path.split(software_dir)[1]
-#         package_dir = os.path.join(software_dir, package)
-#     else:
-#         package_dir, package = os.path.split(package_dir)
-#         software_dir = os.path.dirname(package_dir)
-
-#     if archive_dir == 'auto':
-#         archive_dir = os.path.join(software_dir, package + '_' + date)
-
-#     print()
-#     print('docstringer/archive_package')
-#     print('---------------------------')
-    
-#     if os.path.isdir(archive_dir):
-#         if overwrite:
-#             shutil.rmtree(archive_dir)
-#             print('Overwriting existing dir:', archive_dir)
-    
-#     if not os.path.isdir(archive_dir):
-#         shutil.copytree(package_dir, archive_dir)
-#         print('Copied:', package_dir)
-#         print('    To:', archive_dir)
-#     else:
-#         print('Warning: Not overwriting existing dir:', archive_dir)
-
-#     print('---------------------------')
-#     print()
-
-#     return archive_dir, package_dir
-
-
-
-# def restore_archive(archive_dir, package_dir, archive=True, overwrite=False):
-#     """Deletes the current package directory and replaces it with an archived copy.
-#     """
-
-#     print()
-#     print('docstringer/restore_archive')
-#     print('---------------------------')
-
-#     if archive:
-#         archive_package(package_dir=package_dir, overwrite=overwrite)
-
-#     print('Copying archive:', archive_dir)
-#     shutil.copytree(archive_dir, 'temp_dir')
-    
-#     print('Removing package dir')
-#     shutil.rmtree(package_dir)
-    
-#     print('Restoring archive to:', package_dir)
-#     shutil.copytree('temp_dir', package_dir)
-#     shutil.rmtree('temp_dir')
-
-#     print('---------------------------')
-#     print()
-
-
-
-# def get_subpackages(package_name): 
-#     """
-#     From a given package name, return a list of subpackage names 
-#     """
-
-#     package = importlib.import_module(package_name)
-#     items = package.__dir__()
-#     items = [item for item in items if not item.startswith('__')]
-#     subpackages = []
-
-#     for item in items:
-
-#         try:
-#             imp = importlib.import_module(package_name + '.' + item)
-#             subpackages.append(item)
-#         except:
-#             pass
-
-#     subpackages.sort()
-
-#     return subpackages
-
-
-
-# def get_all_modules(package_name):
-#     """
-#     From the given package, return a list of all module names from all subpackages.
-#     """
-
-#     modules = []
-#     items = get_subpackages(package_name)
-
-#     for item in items:
-#         item = package_name + '.' + item
-#         subitems = get_subpackages(item)
-
-#         if not subitems:
-#             modules.append(item) 
-        
-#         else:
-#             for subitem in subitems:
-#                 subitem = item + '.' + subitem
-#                 subsubitems = get_subpackages(subitem)
-
-#                 if not subsubitems:
-#                     modules.append(subitem)
-        
-#                 else:
-#                     for subsubitem in subsubitems:
-#                         subsubitem = subitem + '.' + subsubitem
-#                         subsubsubitems = get_subpackages(subsubitem)
-
-#                         if not subsubsubitems:
-#                             modules.append(subsubitem)
-
-#     modules.sort()
-#     return modules
-
-
-
-# def get_functions(module_name, include_private=True):
-#     """
-#     From the given module, return a list of all function names.
-#     """
-
-#     functions = []
-    
-#     module = importlib.import_module(module_name)
-#     members = inspect.getmembers(module)
-#     members = [member for member in members if not member[0].startswith('__')]
-#     if not include_private:
-#         members = [member for member in members if not member[0].startswith('_')]
-
-#     for member in members:
-#         if inspect.isfunction(member[1]):
-#             if module == inspect.getmodule(member[1]):
-#                 functions.append(member[0])
-
-#     return functions
-
-
-
-# def get_all_functions(package_name, include_private=True, include_module=True):
-#     """
-#     From the given package, returns a list of all functions from all subpackages.
-#     """
-
-#     functions = []
-
-#     modules = get_all_modules(package_name)
-
-#     for module in modules:
-        
-#         new_funcs = get_functions(module, include_private=include_private)
-#         if include_module:
-#             new_funcs = [module + '.' + function for function in new_funcs]
-
-#         functions.extend(new_funcs)
-
-#     return functions
-
-
-
-# def get_classes(module_name, include_private=True):
-#     """
-#     From the given module, return a list of all class names.
-#     """
-
-#     classes = []
-    
-#     module = importlib.import_module(module_name)
-#     members = inspect.getmembers(module)
-#     members = [member for member in members if not member[0].startswith('__')]
-#     if not include_private:
-#         members = [member for member in members if not member[0].startswith('_')]
-
-#     for member in members:
-#         if inspect.isclass(member[1]):
-#             if module == inspect.getmodule(member[1]):
-#                 classes.append(member[0])
-
-#     return classes
-
-
-
-# def get_all_classes(package_name, include_private=True, include_module=True):
-#     """
-#     From the given package, returns a list of all classes from all subpackages.
-#     """
-
-#     classes = []
-
-#     modules = get_all_modules(package_name)
-
-#     for module in modules:
-        
-#         new_classes = get_classes(module, include_private=include_private)
-#         if include_module:
-#             new_classes = [module + '.' + classi for classi in new_classes]
-
-#         classes.extend(new_classes)
-
-#     return classes
-
-
-
-# def get_methods(class_name):
-#     pass
-
-
-
-# def get_all_methods(package_name):
-#     pass
-
-
-
-
-
-
-
-# # Archive current netpyne package
-# archive_dir, package_dir = archive_package(overwrite=True)
-
-
-# # Restore netpyne package to its pre-docstringer state
-# original_archive_dir = os.path.join(os.path.dirname(package_dir), 'netpyne_orig')
-# restore_archive(original_archive_dir, package_dir)
 
 
 # # Set up the counters
