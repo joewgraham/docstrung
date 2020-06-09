@@ -7,21 +7,24 @@ from docstrung import get
 from docstrung import parse
 from docstrung import options
 from docstrung import template
-from docstrung import docstringer
+from docstrung import docstrung
 from inspect import cleandoc
 
 
-classi = docstringer.Docstrung('netpyne.specs.netParams.NetParams')
-print(classi)
+# classi = docstringer.Docstrung('netpyne.specs.netParams.NetParams')
+# print(classi)
 
-func = docstringer.Docstrung('netpyne.analysis.info.granger')
-print(func)
+# func = docstringer.Docstrung('netpyne.analysis.info.granger')
+# print(func)
 
-mod = docstringer.Docstrung('netpyne.analysis.info')
-print(mod)
+# mod = docstringer.Docstrung('netpyne.analysis.info')
+# print(mod)
 
-subpack = docstringer.Docstrung('netpyne.analysis')
-print(subpack)
+# subpack = docstringer.Docstrung('netpyne.analysis')
+# print(subpack)
 
-pack = docstringer.Docstrung('netpyne')
-print(pack)
+pack = docstrung.Docstrung('netpyne')
+
+foo = pack.all_docstrungs[0]
+
+

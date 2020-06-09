@@ -7,17 +7,21 @@ from . import options
 
 class ObjectDict(OrderedDict):
     def __init__(self):
-        self['name']              = '' 
-        self['type']              = ''
-        self['default']           = ''
-        self['description']       = []
-        self['long_description']  = []
-        self['warnings']          = []
-        self['notes']             = []
-        self['see_also']          = []
-        self['examples']          = []
-        self['references']        = []
-        self['object']            = None
+        self['name']             = '' 
+        self['type']             = ''
+        self['default']          = ''
+        self['description']      = []
+        self['long_description'] = []
+        self['warnings']         = []
+        self['notes']            = []
+        self['see_also']         = []
+        self['examples']         = []
+        self['references']       = []
+        self['object']           = None
+        self['initial_newline']  = options.initial_newline
+        self['initial_indent']   = options.initial_indent
+        self['spacer']           = options.spacer
+
 
 
 class AttributeDict(ObjectDict):

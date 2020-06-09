@@ -1,17 +1,17 @@
 from . import get
 from . import parse
 from . import template
+from . import options
 
-
+initial_newline = options.initial_newline
+initial_indent = options.initial_indent
+spacer = options.spacer
 
         
-def write_docstring(object_name, initial_newline=True, spacer='    '):
+def write_docstring(docstring_template, docstring_dict, initial_newline=initial_newline, initial_indent=initial_indent, spacer=spacer):
 
-
-    # Need template and object_dict
-
-
-
+    
+    
     line_space = '\n' + spacer
     line_space_space = line_space + spacer
     if initial_newline:

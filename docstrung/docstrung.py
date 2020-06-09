@@ -26,46 +26,55 @@ class Docstrung():
         self.main_template = template.docstring_templates[docstring_template]['main']
         self.subsection_templates = template.docstring_templates[docstring_template]['subsection']
 
+        self.all_docstrungs = []
+
         print()
-        print('docstrung')
+        print('docstrung is processing:')
+        print('========================')
         print('object_name:', self.object_name)
         print('object_type:', self.object_type)
         print()
-        
+        print('items docstrung')
+        print('===============')
+
         if self.object_type == 'package':
 
-            self.all_docstrungs = []
-
+            print('package:    ', self.object_name)
             package_docstrung = ParsedDocstring(object_name, parser_function=options.docstring_parser)
             self.all_docstrungs.append(package_docstrung)
 
+            print()
             self.subpackages = get.get_all_subpackages(object_name, include_private=options.include_private)
             for subpackage in self.subpackages:
                 print('subpackage: ', subpackage)
                 subpackage_docstrung = ParsedDocstring(subpackage, parser_function=options.docstring_parser)
                 self.all_docstrungs.append(subpackage_docstrung)
 
+            print()
             self.modules = get.get_all_modules(object_name, include_private=options.include_private)
             for module in self.modules:
-                print('module:', module)
+                print('module:     ', module)
                 module_docstrung = ParsedDocstring(module, parser_function=options.docstring_parser)
                 self.all_docstrungs.append(module_docstrung)
 
+            print()
             self.functions = get.get_all_functions(object_name, include_private=options.include_private)
             for function in self.functions:
-                print('function:', function)
+                print('function:   ', function)
                 function_docstrung = ParsedDocstring(function, parser_function=options.docstring_parser)
                 self.all_docstrungs.append(function_docstrung)
 
+            print()
             self.classes = get.get_all_classes(object_name, include_private=options.include_private)
             for classi in self.classes:
-                print('class:', classi)
+                print('class:      ', classi)
                 class_docstrung = ParsedDocstring(classi, parser_function=options.docstring_parser)
                 self.all_docstrungs.append(class_docstrung)
 
+            print()
             self.methods = get.get_all_methods(object_name, include_private=options.include_private)
             for method in self.methods:
-                print('method:', method)
+                print('method:     ', method)
                 method_docstrung = ParsedDocstring(method, parser_function=options.docstring_parser)
                 self.all_docstrungs.append(method_docstrung)
 
