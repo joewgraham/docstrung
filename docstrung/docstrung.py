@@ -14,6 +14,21 @@ from . import options
 
 from .parse import ParsedDocstring
 
+initial_newline = options.initial_newline
+initial_indent = options.initial_indent
+spacer = options.spacer
+
+class DocstrungDocstring(ParsedDocstring):
+
+    def __init__(self, object_name, docstring_parser=options.docstring_parser):
+        
+        super().__init__(object_name, docstring_parser=options.docstring_parser)
+
+        self.docstring = write.write_docstring(self.docstring_template, self.object_dict, initial_newline=initial_newline, initial_indent=initial_indent, spacer=spacer)
+
+
+
+
 # Create a template dictionary
 class Docstrung():
 
@@ -40,42 +55,42 @@ class Docstrung():
         if self.object_type == 'package':
 
             print('package:    ', self.object_name)
-            package_docstrung = ParsedDocstring(object_name, parser_function=options.docstring_parser)
+            package_docstrung = DocstrungDocstring(self.object_name, docstring_parser=options.docstring_parser)
             self.all_docstrungs.append(package_docstrung)
 
             print()
             self.subpackages = get.get_all_subpackages(object_name, include_private=options.include_private)
             for subpackage in self.subpackages:
                 print('subpackage: ', subpackage)
-                subpackage_docstrung = ParsedDocstring(subpackage, parser_function=options.docstring_parser)
+                subpackage_docstrung = DocstrungDocstring(subpackage, docstring_parser=options.docstring_parser)
                 self.all_docstrungs.append(subpackage_docstrung)
 
             print()
             self.modules = get.get_all_modules(object_name, include_private=options.include_private)
             for module in self.modules:
                 print('module:     ', module)
-                module_docstrung = ParsedDocstring(module, parser_function=options.docstring_parser)
+                module_docstrung = DocstrungDocstring(module, docstring_parser=options.docstring_parser)
                 self.all_docstrungs.append(module_docstrung)
 
             print()
             self.functions = get.get_all_functions(object_name, include_private=options.include_private)
             for function in self.functions:
                 print('function:   ', function)
-                function_docstrung = ParsedDocstring(function, parser_function=options.docstring_parser)
+                function_docstrung = DocstrungDocstring(function, docstring_parser=options.docstring_parser)
                 self.all_docstrungs.append(function_docstrung)
 
             print()
             self.classes = get.get_all_classes(object_name, include_private=options.include_private)
             for classi in self.classes:
                 print('class:      ', classi)
-                class_docstrung = ParsedDocstring(classi, parser_function=options.docstring_parser)
+                class_docstrung = DocstrungDocstring(classi, docstring_parser=options.docstring_parser)
                 self.all_docstrungs.append(class_docstrung)
 
             print()
             self.methods = get.get_all_methods(object_name, include_private=options.include_private)
             for method in self.methods:
                 print('method:     ', method)
-                method_docstrung = ParsedDocstring(method, parser_function=options.docstring_parser)
+                method_docstrung = DocstrungDocstring(method, docstring_parser=options.docstring_parser)
                 self.all_docstrungs.append(method_docstrung)
 
 
@@ -277,35 +292,5 @@ class Docstrung():
 # print('     ', package_dir)
 # print()
 
-
-
-
-
-
-
-# '''
-# Modularize the code
-#     doc_dict_from_module
-#     parse_docstring
-#     use_old_docstring
-#     write_docstring 
-#     replace docstring
-#     main function
-
-# Look into auto-getting all functions/classes
-
-# Dealing with classes
-#     Need to document class methods
-#     Need to format output for classes
-#         Need to remove return, return_type, examples from classes
-
-# Create GitHub issues with copy of original docstrings
-
-# Go through Sphinx warnings
-
-# Fix See Also parentheses
-
-# Make docstringer into a package?
-# '''
 
 

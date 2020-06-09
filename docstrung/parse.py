@@ -24,7 +24,7 @@ PackageDict   = template.PackageDict
 
 class ParsedDocstring:
     
-    def __init__(self, object_name, parser_function=options.docstring_parser):
+    def __init__(self, object_name, docstring_parser=options.docstring_parser, docstring_template=options.docstring_template):
 
         imported_object, object_type = get.get_object(object_name, return_type=True)
 
@@ -50,8 +50,13 @@ class ParsedDocstring:
         self.object_dict['object'] = imported_object
         self.object_dict['original_docstring'] = self.original_docstring
 
-        parser_function = getattr(parse, parser_function)
-        self.object_dict = parser_function(self.object_dict)
+        #self.object_dict['initial_newline']    = options.initial_newline
+        #self.object_dict['initial_indent']     = options.initial_indent
+        #self.object_dict['spacer']             = options.spacer
+
+        self.docstring_parser = getattr(parse, docstring_parser)
+        self.object_dict = self.docstring_parser(self.object_dict)
+        self.docstring_template = template.docstring_templates[options.docstring_template]
 
 
 

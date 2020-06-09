@@ -11,20 +11,20 @@ from docstrung import docstrung
 from inspect import cleandoc
 
 
-# classi = docstringer.Docstrung('netpyne.specs.netParams.NetParams')
-# print(classi)
-
-# func = docstringer.Docstrung('netpyne.analysis.info.granger')
-# print(func)
-
-# mod = docstringer.Docstrung('netpyne.analysis.info')
-# print(mod)
-
-# subpack = docstringer.Docstrung('netpyne.analysis')
-# print(subpack)
-
 pack = docstrung.Docstrung('netpyne')
 
-foo = pack.all_docstrungs[0]
+for item in pack.all_docstrungs:
+
+    print()
+    print()
+    print(item.object_name)
+    print('=====================================================')
+    print(item.docstring)
+    print('=====================================================')
+    print()
+    print()
+    print()
+
+
 
 

@@ -8,141 +8,51 @@ initial_indent = options.initial_indent
 spacer = options.spacer
 
         
-def write_docstring(docstring_template, docstring_dict, initial_newline=initial_newline, initial_indent=initial_indent, spacer=spacer):
+def write_docstring(docstring_template, object_dict, initial_newline=initial_newline, initial_indent=initial_indent, spacer=spacer):
 
-    
-    
-    line_space = '\n' + spacer
-    line_space_space = line_space + spacer
+    section_templates = docstring_template['subsection']
+    docstring_template = docstring_template['main']
+
+    options_dict = {}
+    options_dict['initial_newline'] = initial_newline
+    options_dict['initial_indent'] = initial_indent
+    options_dict['spacer'] = spacer
+
+
     if initial_newline:
-        new_docstring += line_space
+        initial_newline_string = '\n'
+    else:
+        initial_newline_string = ''
 
-    new_docstring += line_space.join(parsed_docstring['short_description'])
-    new_docstring += '\n\n'
+    docstring_string = initial_newline_string
 
-    if parsed_docstring['long_description']:
+    for section, section_template in docstring_template.items():
 
-        new_docstring += line_space.join(parsed_docstring['long_description'])
-        new_docstring += '\n\n'
+        if not section in section_templates:
+            if object_dict[section]:
+                docstring_string += section_template.format(**{**object_dict, **options_dict})
 
-    if parsed_docstring['parameters']:
+        else:
 
-        new_docstring += spacer + 'Parameters\n'
-        new_docstring += spacer + '----------\n'
+            if section in object_dict:
 
-        for param, param_dict in parsed_docstring['parameters'].items():
+                if object_dict[section]:
 
-            new_docstring += spacer + param + ' : ' + str(param_dict['type']) + '\n'
-            new_docstring += spacer + spacer + param_dict['description'] + '\n'
-
-            if not 'default' in param_dict['description']:
-                new_docstring += spacer + spacer + '**Default**: ``' + param_dict['default'] + '``\n'
+                    docstring_string += section_templates[section].format(**{**object_dict, **options_dict})
                     
-            if not 'options' in param_dict['description'] and not 'required' in param_dict['default']:
-                new_docstring += spacer + spacer + '**Options**: \n '
-            
-            new_docstring += '\n'
+                    for subsection in object_dict[section]:
 
-        new_docstring += '\n'
+                        subsection_template = section_templates[section]
+                        subsection_string = subsection_template.format(**{**subsection, **options_dict})
 
+                        docstring_string += subsection_string
 
-
-
+    return docstring_string
 
 
 
+def write_to_file():
+    pass
 
-    if parsed_docstring['methods']:
-
-        new_docstring += spacer + 'Methods\n'
-        new_docstring += spacer + '----------\n'
-
-        for param, param_dict in parsed_docstring['methods'].items():
-
-            new_docstring += spacer + param + ' : ' + str(param_dict['type']) + '\n'
-            new_docstring += spacer + spacer + param_dict['description'] + '\n'
-
-            if not 'default' in param_dict['description']:
-                new_docstring += spacer + spacer + '**Default**: ``' + param_dict['default'] + '``\n'
-                    
-            if not 'options' in param_dict['description'] and not 'required' in param_dict['default']:
-                new_docstring += spacer + spacer + '**Options**: \n '
-            
-            new_docstring += '\n'
-
-        new_docstring += '\n'
-
-
-
-
-
-
-
-
-    if parsed_docstring['returns']:
-
-        new_docstring += spacer + 'Returns\n'
-        new_docstring += spacer + '-------\n'
-        new_docstring += spacer + parsed_docstring['returns']['type'] + '\n'
-        new_docstring += spacer + spacer +  line_space_space.join(parsed_docstring['returns']['description'])
-        new_docstring += '\n\n'
-
-    if parsed_docstring['yields']:
-        pass
-
-    if parsed_docstring['receives']:
-        pass
-
-    if parsed_docstring['raises']:
-        pass
-
-    if parsed_docstring['warns']:
-        pass
-
-    if parsed_docstring['other_parameters']:
-        pass
-
-    if parsed_docstring['attributes']:
-        pass
-
-    if parsed_docstring['methods']:
-        print('============================================================================================================')
-        print('Missing some parsed methods (see write.py)')
-        print("parsed_docstring['methods']:\n\n")
-        print(parsed_docstring['methods'])
-        print('\n\n')
-        pass
-
-    if parsed_docstring['see_also']:
-
-            # new_docstring += spacer + 'See Also\n'
-            # new_docstring += spacer + '--------\n'
-            # new_docstring += spacer + module + ' :\n\n'
-            pass
-
-    if parsed_docstring['notes']:
-
-        new_docstring += line_space.join(parsed_docstring['notes'])
-        new_docstring += '\n\n'
-
-    if parsed_docstring['warnings']:
-
-        new_docstring += line_space.join(parsed_docstring['warnings'])
-        new_docstring += '\n\n'
-
-    if parsed_docstring['references']:
-
-        new_docstring += line_space.join(parsed_docstring['references'])
-        new_docstring += '\n\n'
-
-    if parsed_docstring['examples']:
-
-        # new_docstring += spacer + 'Examples\n'
-        # new_docstring += spacer + '--------\n'
-        # new_docstring += spacer + '>>> import netpyne, netpyne.examples.example\n'
-        # new_docstring += spacer + '>>> ' + module + '.' + item + '()\n'
-        pass
-
-    return new_docstring
 
 

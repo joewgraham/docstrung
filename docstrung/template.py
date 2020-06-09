@@ -7,21 +7,22 @@ from . import options
 
 class ObjectDict(OrderedDict):
     def __init__(self):
-        self['name']             = '' 
-        self['type']             = ''
-        self['default']          = ''
-        self['description']      = []
-        self['long_description'] = []
-        self['warnings']         = []
-        self['notes']            = []
-        self['see_also']         = []
-        self['examples']         = []
-        self['references']       = []
-        self['object']           = None
-        self['initial_newline']  = options.initial_newline
-        self['initial_indent']   = options.initial_indent
-        self['spacer']           = options.spacer
-
+        self['name']               = '' 
+        self['type']               = ''
+        self['default']            = ''
+        self['description']        = []
+        self['long_description']   = []
+        self['warnings']           = []
+        self['notes']              = []
+        self['see_also']           = []
+        self['examples']           = []
+        self['references']         = []
+        self['object']             = None
+        # self['initial_newline']    = options.initial_newline
+        # self['initial_indent']     = options.initial_indent
+        # self['spacer']             = options.spacer
+        
+        docstring_template_function = docstring_templates[options.docstring_template]
 
 
 class AttributeDict(ObjectDict):
@@ -91,8 +92,8 @@ docstring_templates = {}
 
 # Define the default template
 docstring_templates['default_template'] = {}
-docstring_templates['default_template']['main'] = OrderedDict()
 
+docstring_templates['default_template']['main'] = OrderedDict()
 main = docstring_templates['default_template']['main']
 
 main['description'] = '{initial_indent}{description}\n\n'
@@ -100,43 +101,33 @@ main['long_description'] = '{initial_indent}{long_description}\n\n'
 
 main['attributes'] = '{initial_indent}Attributes\n'
 main['attributes'] += '{initial_indent}----------\n'
-main['attributes'] += '{attributes}'
 
 main['parameters'] = '{initial_indent}Parameters\n'
 main['parameters'] += '{initial_indent}----------\n'
-main['parameters'] += '{parameters}'
 
 main['returns'] = '{initial_indent}Returns\n'
 main['returns'] += '{initial_indent}-------\n'
-main['returns'] += '{returns}'
 
 main['yields'] = '{initial_indent}Yields\n'
 main['yields'] += '{initial_indent}------\n'
-main['yields'] += '{yields}'
 
 main['raises'] = '{initial_indent}Raises\n'
 main['raises'] += '{initial_indent}------\n'
-main['raises'] += '{raises}'
 
 main['warnings'] = '{initial_indent}Warnings\n'
 main['warnings'] += '{initial_indent}--------\n'
-main['warnings'] += '{warnings}'
 
 main['notes'] = '{initial_indent}Notes\n'
 main['notes'] += '{initial_indent}-----\n'
-main['notes'] += '{notes}'
 
 main['see_also'] = '{initial_indent}See Also\n'
 main['see_also'] += '{initial_indent}--------\n'
-main['see_also'] += '{see_also}'
 
 main['examples'] = '{initial_indent}Examples\n'
 main['examples'] += '{initial_indent}--------\n'
-main['examples'] += '{examples}'
 
 main['references'] = '{initial_indent}References\n'
 main['references'] += '{initial_indent}----------\n'
-main['references'] += '{references}'
 
 docstring_templates['default_template']['subsection'] = {}
 subsection = docstring_templates['default_template']['subsection']
