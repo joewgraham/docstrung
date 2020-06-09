@@ -10,14 +10,12 @@ from . import get
 from . import write
 from . import template
 from . import parse
+from . import options
 
 
-initial_newline = template.initial_newline
-spacer          = template.spacer
-include_private = template.include_private
-
-
-
+initial_newline = options.initial_newline
+spacer          = options.spacer
+include_private = options.include_private
 
 
 

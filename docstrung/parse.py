@@ -4,6 +4,8 @@ from collections import OrderedDict
 from . import get
 from . import template
 from . import parse
+from . import options
+
 
 
 ObjectDict    = template.ObjectDict
@@ -22,7 +24,7 @@ PackageDict   = template.PackageDict
 
 class DocstringParser:
     
-    def __init__(self, object_name, parser_function=template.parser):
+    def __init__(self, object_name, parser_function=options.docstring_parser):
 
         imported_object, object_type = get.get_object(object_name, return_type=True)
 
@@ -87,7 +89,6 @@ def parse_parameters(object_name):
 
             parameters.append(ParameterDict)
 
-
     return parameters
 
 
@@ -144,189 +145,16 @@ def default_parser(object_dict):
 
             # replace raises
 
-
         elif object_type == 'attribute':
             pass
 
         else:
             pass
 
-
     return object_dict
 
 
 
-def parse_docstring(object_name, parameters=None): 
-
-    imported_object, object_type = get.get_object(object_name, return_type=True)
-
-    if object_type == 'function':
-
-        parsed = FunctionDoc(imported_object)
-        print('Function')
-        print('=============')
-
-        if parsed['Parameters']:
-            print('  Parameters were parsed.')
-        else:
-            print('  Parameters weren"t parsed!!')
-
-        if parsed['Methods']:
-            print('  Methods were parsed.')
-        else:
-            print('  Methods weren"t parsed!!')
-            
-    elif object_type == 'type':  #e.g. elif object_type == 'class', but class is protected
-        
-        parsed = ClassDoc(imported_object)
-        print('Class')
-        print('=============')
-        
-        if parsed['Parameters']:
-            print('  Parameters were parsed.')
-        else:
-            print('  Parameters weren"t parsed!!')
-
-        if parsed['Methods']:
-            print('  Methods were parsed.')
-        else:
-            print('  Methods weren"t parsed!!')
-
-    elif object_type == 'method':
-
-        parsed = FunctionDoc(imported_object)
-        print('Method')
-        print('=============')
-
-        if parsed['Parameters']:
-            print('  Parameters were parsed.')
-        else:
-            print('  Parameters weren"t parsed!!')
-
-        if parsed['Methods']:
-            print('  Methods were parsed.')
-        else:
-            print('  Methods weren"t parsed!!')
-
-    else:
-
-        parsed = None
-        print(object_type)
-        print('=============')
-
-    docstring_sections = template.template_dict
-    
-    if parsed['Summary']:
-        docstring_sections['short_description'] = parsed['Summary']
-    else:
-        docstring_sections['short_description'] = ['Short description of ' + object_name]
-    
-    if parsed['Extended Summary']:
-        docstring_sections['long_description '] = parsed['Extended Summary']
 
 
-    docstring_sections['parameters'] = parse_parameters(object_name)
-    for param in docstring_sections['parameters']:
-        
-        if param in parsed:
-
-            if parsed['parameters'][param]['type']:
-                docstring_sections['parameters'][param]['type'] = parsed['parameters'][param]['type']
-                print('replaced')
-
-            if parsed['parameters'][param]['default']:
-                docstring_sections['parameters'][param]['default'] = parsed['parameters'][param]['default']
-                print('replaced')
-
-            if parsed['parameters'][param]['description']:
-                docstring_sections['parameters'][param]['description'] = parsed['parameters'][param]['description']
-                print('replaced')
-
-    for param in parsed['Returns']:
-        docstring_sections['returns']['name'] = param.name
-        docstring_sections['returns']['type'] = param.type
-        docstring_sections['returns']['description'] = param.desc
-    
-    for param in parsed['Yields']:
-        #docstring_sections['yields'][param.name] = {'type': param.type, 'description': param.desc}
-        pass
-    
-    for param in parsed['Receives']:
-        #docstring_sections['receives'][param.name] = {'type': param.type, 'description': param.desc}
-        pass
- 
-    for param in parsed['Raises']:
-        #docstring_sections['raises'][param.name] = {'type': param.type, 'description': param.desc}
-        pass
- 
-    for param in parsed['Warns']:
-        #docstring_sections['warns'][param.name] = {'type': param.type, 'description': param.desc}
-        pass
- 
-    for param in parsed['Other Parameters']:
-        #docstring_sections['other_parameters'][param.name] = {'type': param.type, 'description': param.desc}
-        pass
- 
-    for param in parsed['Attributes']:
-        #docstring_sections['attributes'][param.name] = {'type': param.type, 'description': param.desc}    
-        pass
-        print()
-        print('Attributes params')
-        print(param)
-
-
-
-
-
-
-
-
-
-
-
-    docstring_sections['methods'] = parse_parameters(object_name)
-    for param in docstring_sections['methods']:
-        
-        if param in parsed:
-
-            if parsed['methods'][param]['type']:
-                docstring_sections['methods'][param]['type'] = parsed['methods'][param]['type']
-                print('replaced')
-
-            if parsed['methods'][param]['default']:
-                docstring_sections['methods'][param]['default'] = parsed['methods'][param]['default']
-                print('replaced')
-
-            if parsed['methods'][param]['description']:
-                docstring_sections['methods'][param]['description'] = parsed['methods'][param]['description']
-                print('replaced')
-
-
-
-
-
-
-
-
-
-    
-    for param in parsed['See Also']:            
-        #docstring_sections['see_also'][param[0][0][0]] = {'type': None, 'description': param[0][0][1]}
-        pass
-
-    for param in parsed['Notes']:
-        #docstring_sections['notes'][param.name] = {'type': param.type, 'description': param.desc}
-        pass
-    
-    for param in parsed['Warnings']:
-        #docstring_sections['warnings'][param.name] = {'type': param.type, 'description': param.desc}
-        pass
-
-    for param in parsed['References']:
-        #docstring_sections['references'][param.name] = {'type': param.type, 'description': param.desc}
-        pass
-
-    docstring_sections['examples'] = parsed['Examples']
-
-    return docstring_sections
 

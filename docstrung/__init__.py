@@ -18,6 +18,7 @@ from . import parse
 from . import write
 from . import report
 from . import docstringer
+from . import options
 
 
 

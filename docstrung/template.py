@@ -1,11 +1,5 @@
 from collections import OrderedDict
-
-
-initial_newline = True 
-spacer = '    '
-include_private = False
-parser = 'default_parser'
-template = 'default_template'
+from . import options
 
 
 
@@ -88,72 +82,92 @@ class PackageDict(ModuleDict):
 
 
 
-# Docstring templates
 
-class DocstringSection:
+# Create a template dictionary
+class DocstringTemplate():
 
-    def __init__(self, section_title=''):
+    def __init__(self, template='default_template'):
 
-        self.initial_newline = ''
-        self.header = section_title
-        self.content = None
-        self.underscore = '-'
+        self.main = docstring_templates[template]['main']
+        self.subsection = docstring_templates[template]['subsection']
 
-
-
-docstring_templates = OrderedDict()
-
-docstring_templates['default_template'] = OrderedDict()
-
-docstring_templates['default_template']['description'] = OrderedDict()
-docstring_templates['default_template']['long_description'] = OrderedDict()
-docstring_templates['default_template']['attributes'] = OrderedDict()
-docstring_templates['default_template']['parameters'] = OrderedDict()
-docstring_templates['default_template']['returns'] = OrderedDict()
-docstring_templates['default_template']['yields'] = OrderedDict()
-docstring_templates['default_template']['raises'] = OrderedDict()
-docstring_templates['default_template']['warnings'] = OrderedDict()
-docstring_templates['default_template']['notes'] = OrderedDict()
-docstring_templates['default_template']['see_also'] = OrderedDict()
-docstring_templates['default_template']['examples'] = OrderedDict()
-docstring_templates['default_template']['references'] = OrderedDict()
-    
+        
 
 
 
+# Define default template 
+docstring_templates = {}
 
-# Class definitions for docstring template
+docstring_templates['default_template'] = {}
+docstring_templates['default_template']['main'] = OrderedDict()
 
-class DocstringTemplate(OrderedDict):
+main = docstring_templates['default_template']['main']
 
-    def __init__(self):
+main['description'] = '{initial_indent}{description}\n\n'
+main['long_description'] = '{initial_indent}{long_description}\n\n'
 
-        self['description']       = DescriptionDocstringTemplate()
-        self['long_description']  = Long_descriptionDocstringTemplate()
-        self['attributes']        = AttributesDocstringTemplate()
-        self['parameters']        = ParametersDocstringTemplate()
-        self['returns']           = ReturnsDocstringTemplate()
-        self['yields']            = YieldsDocstringTemplate()
-        self['raises']            = RaisesDocstringTemplate()
-        self['warnings']          = WarningsDocstringTemplate()
-        self['notes']             = NotesDocstringTemplate()
-        self['see_also']          = See_alsoDocstringTemplate()
-        self['examples']          = ExamplesDocstringTemplate()
-        self['references']        = ReferencesDocstringTemplate()
+main['attributes'] = '{initial_indent}Attributes\n'
+main['attributes'] += '{initial_indent}----------\n'
+main['attributes'] += '{attributes}'
+
+main['parameters'] = '{initial_indent}Parameters\n'
+main['parameters'] += '{initial_indent}----------\n'
+main['parameters'] += '{parameters}'
+
+main['returns'] = '{initial_indent}Returns\n'
+main['returns'] += '{initial_indent}-------\n'
+main['returns'] += '{returns}'
+
+main['yields'] = '{initial_indent}Yields\n'
+main['yields'] += '{initial_indent}------\n'
+main['yields'] += '{yields}'
+
+main['raises'] = '{initial_indent}Raises\n'
+main['raises'] += '{initial_indent}------\n'
+main['raises'] += '{raises}'
+
+main['warnings'] = '{initial_indent}Warnings\n'
+main['warnings'] += '{initial_indent}--------\n'
+main['warnings'] += '{warnings}'
+
+main['notes'] = '{initial_indent}Notes\n'
+main['notes'] += '{initial_indent}-----\n'
+main['notes'] += '{notes}'
+
+main['see_also'] = '{initial_indent}See Also\n'
+main['see_also'] += '{initial_indent}--------\n'
+main['see_also'] += '{see_also}'
+
+main['examples'] = '{initial_indent}Examples\n'
+main['examples'] += '{initial_indent}--------\n'
+main['examples'] += '{examples}'
+
+main['references'] = '{initial_indent}References\n'
+main['references'] += '{initial_indent}----------\n'
+main['references'] += '{references}'
 
 
+docstring_templates['default_template']['subsection'] = {}
+subsection = docstring_templates['default_template']['subsection']
 
+subsection['attributes'] = '{initial_indent}{name} : {type}\n'
+subsection['attributes'] += '{initial_indent}{spacer}{description}\n'
+subsection['attributes'] += '{initial_indent}{spacer}**Default:**{default}\n'
+subsection['attributes'] += '{initial_indent}{spacer}**Options:**\n\n'
 
+subsection['parameters'] = '{initial_indent}{name} : {type}\n'
+subsection['parameters'] += '{initial_indent}{spacer}{description}\n'
+subsection['parameters'] += '{initial_indent}{spacer}**Default:**{default}\n'
+subsection['parameters'] += '{initial_indent}{spacer}**Options:**\n\n'
 
+subsection['returns'] = '{initial_indent}{type}\n'
+subsection['returns'] += '{initial_indent}{spacer}{description}\n\n'
 
-def write_template_string(sections_dict):
+subsection['yields'] = '{initial_indent}{type}\n'
+subsection['yields'] += '{initial_indent}{spacer}{description}\n\n'
 
-    template_string = ''
-    
-    for section in sections_dict:
-        template_string += '{' + section + '}'
-    
-    return template_string
+subsection['raises'] = '{initial_indent}{type}\n'
+subsection['raises'] += '{initial_indent}{spacer}{description}\n\n'
 
 
 
@@ -162,81 +176,4 @@ def write_template_string(sections_dict):
 
 
             
-
-
-
-
-
-
-
-
-
-# class DocstringTemplate:
-
-#     def __init__(self, sections_dict=default_template_dict):
-        
-#         self.template_dict = sections_dict
-#         self.template_string = write_template_string(sections_dict)
-
-
-
-
-
-
-
-
-
-
-
-
-    """
-    'args': self._parse_parameters_section,
-    'arguments': self._parse_parameters_section,
-    'attention': partial(self._parse_admonition, 'attention'),
-    'attributes': self._parse_attributes_section,
-    'caution': partial(self._parse_admonition, 'caution'),
-    'danger': partial(self._parse_admonition, 'danger'),
-    'error': partial(self._parse_admonition, 'error'),
-    'example': self._parse_examples_section,
-    'examples': self._parse_examples_section,
-    'hint': partial(self._parse_admonition, 'hint'),
-    'important': partial(self._parse_admonition, 'important'),
-    'keyword args': self._parse_keyword_arguments_section,
-    'keyword arguments': self._parse_keyword_arguments_section,
-    'methods': self._parse_methods_section,
-    'note': partial(self._parse_admonition, 'note'),
-    'notes': self._parse_notes_section,
-    'other parameters': self._parse_other_parameters_section,
-    'parameters': self._parse_parameters_section,
-    'return': self._parse_returns_section,
-    'returns': self._parse_returns_section,
-    'raises': self._parse_raises_section,
-    'references': self._parse_references_section,
-    'see also': self._parse_see_also_section,
-    'tip': partial(self._parse_admonition, 'tip'),
-    'todo': partial(self._parse_admonition, 'todo'),
-    'warning': partial(self._parse_admonition, 'warning'),
-    'warnings': partial(self._parse_admonition, 'warning'),
-    'warns': self._parse_warns_section,
-    'yield': self._parse_yields_section,
-    'yields': self._parse_yields_section,
-
-    """
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
 
