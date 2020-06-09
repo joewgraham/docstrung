@@ -22,7 +22,7 @@ PackageDict   = template.PackageDict
 
 
 
-class DocstringParser:
+class ParsedDocstring:
     
     def __init__(self, object_name, parser_function=options.docstring_parser):
 
@@ -41,7 +41,7 @@ class DocstringParser:
             self.object_dict = template.ClassDict()
         elif object_type == 'function' or object_type == 'method':
             self.object_dict = template.FunctionDict()
-            self.object_dict['parameters'] = parse_parameters(object_name)
+            self.object_dict['parameters'] = read_parameters(object_name)
         else:
             self.object_dict = template.ObjectDict()
 
@@ -55,7 +55,7 @@ class DocstringParser:
 
 
 
-def parse_parameters(object_name):
+def read_parameters(object_name):
 
     parameters = []
     signature = get.get_object_signature(object_name)

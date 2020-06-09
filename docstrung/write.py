@@ -3,21 +3,14 @@ from . import parse
 from . import template
 
 
-class docstringWriter:
 
-    def __init__(self, object_name, template, initial_newline=True, spacer='    '):
-
-        self.new_docstring = template.template_string.format(**template.template_dict)
         
-
-
-
-
 def write_docstring(object_name, initial_newline=True, spacer='    '):
 
-    parsed_docstring = parse.parse_docstring(object_name)
 
-    new_docstring = ''
+    # Need template and object_dict
+
+
 
     line_space = '\n' + spacer
     line_space_space = line_space + spacer

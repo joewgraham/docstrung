@@ -81,23 +81,11 @@ class PackageDict(ModuleDict):
 
 
 
-
-
-# Create a template dictionary
-class DocstringTemplate():
-
-    def __init__(self, template='default_template'):
-
-        self.main = docstring_templates[template]['main']
-        self.subsection = docstring_templates[template]['subsection']
-
-        
-
-
-
-# Define default template 
+# Create the templates dictionary
 docstring_templates = {}
 
+
+# Define the default template
 docstring_templates['default_template'] = {}
 docstring_templates['default_template']['main'] = OrderedDict()
 
@@ -145,7 +133,6 @@ main['examples'] += '{examples}'
 main['references'] = '{initial_indent}References\n'
 main['references'] += '{initial_indent}----------\n'
 main['references'] += '{references}'
-
 
 docstring_templates['default_template']['subsection'] = {}
 subsection = docstring_templates['default_template']['subsection']
