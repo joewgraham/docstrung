@@ -11,9 +11,9 @@ from docstrung import docstrung
 from inspect import cleandoc
 
 
-pack = docstrung.Docstrung('netpyne')
+netpyne_package = docstrung.Docstrung('netpyne')
 
-for item in pack.all_docstrungs:
+for item in netpyne_package.all_docstrungs:
 
     print()
     print()
