@@ -58,8 +58,8 @@ class Docstrung():
         print('object_name:', self.object_name)
         print('object_type:', self.object_type)
         print()
-        print('items docstrung')
-        print('===============')
+        print('items being docstrung:')
+        print('======================')
 
         if self.object_type == 'package':
 
@@ -144,8 +144,10 @@ class Docstrung():
         print()
         print('docstrung processed:')
         print('====================')
+        print('object_name:', self.object_name)
+        print('object_type:', self.object_type)
         print()
-        print('Total items:')
+        print('Total items docstrung:')
         print('----------------------------')
         print('number of items:', self.counters['total']['total'])
         print('   undocumented:', self.counters['total']['no_docstring'])
