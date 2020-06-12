@@ -14,11 +14,124 @@ from . import template
 from . import parse
 from . import options
 
-from .parse import ParsedDocstring
 
 initial_newline = options.initial_newline
 initial_indent = options.initial_indent
 spacer = options.spacer
+
+
+# Class definitions for package objects
+class ObjectDict(OrderedDict):
+    def __init__(self):
+        self['name']               = '' 
+        self['type']               = ''
+        self['default']            = ''
+        self['description']        = []
+        self['long_description']   = []
+        self['warnings']           = []
+        self['notes']              = []
+        self['see_also']           = []
+        self['examples']           = []
+        self['references']         = []
+        self['object']             = None
+        
+        #docstring_template_function = docstring_templates[options.docstring_template]
+
+
+class AttributeDict(ObjectDict):
+    def __init__(self):
+        super().__init__()
+
+
+class ParameterDict(ObjectDict):
+    def __init__(self):
+        super().__init__()
+
+
+class ReturnsDict(ObjectDict):
+    def __init__(self):
+        super().__init__()
+
+
+class YieldsDict(ObjectDict):
+    def __init__(self):
+        super().__init__()
+
+
+class RaisesDict(ObjectDict):
+    def __init__(self):
+        super().__init__()
+
+
+class FunctionDict(ObjectDict):
+    def __init__(self):
+        super().__init__()
+        self['attributes'] = []
+        self['parameters'] = []
+        self['returns'] = []
+        self['yields'] = []
+        self['raises'] = []
+
+
+class MethodDict(FunctionDict):
+    def __init__(self):
+        super().__init__()
+
+
+class ClassDict(FunctionDict):
+    def __init__(self):
+        super().__init__()
+        self['methods'] = []
+
+
+class ModuleDict(ClassDict):
+    def __init__(self):
+        super().__init__()
+        self['functions'] = []
+        self['classes'] = []
+        self['methods'] = []
+
+
+class PackageDict(ModuleDict):
+    def __init__(self):
+        super().__init__()
+        self['modules'] = []
+
+
+
+class ParsedDocstring:
+    
+    def __init__(self, object_name, docstring_parser=options.docstring_parser, docstring_template=options.docstring_template):
+
+        imported_object, object_type = get.get_object(object_name, return_type=True)
+
+        self.object_name = object_name
+        self.object_type = object_type
+        self.object = imported_object
+        self.original_docstring = get.get_docstring(object_name)
+        
+        if object_type == 'package':
+            self.object_dict = PackageDict()
+        elif object_type == 'module':
+            self.object_dict = ModuleDict()
+        elif object_type == 'class':
+            self.object_dict = ClassDict()
+        elif object_type == 'function' or object_type == 'method':
+            self.object_dict = FunctionDict()
+            self.object_dict['parameters'] = parse.read_parameters(object_name)
+        else:
+            self.object_dict = ObjectDict()
+
+        self.object_dict['name']   = object_name 
+        self.object_dict['type']   = object_type
+        self.object_dict['object'] = imported_object
+        self.object_dict['original_docstring'] = self.original_docstring
+
+        self.docstring_parser = getattr(parse, docstring_parser)
+        self.object_dict = self.docstring_parser(self.object_dict)
+        self.docstring_template = template.docstring_templates[options.docstring_template]
+
+
 
 class DocstrungDocstring(ParsedDocstring):
 
@@ -27,7 +140,6 @@ class DocstrungDocstring(ParsedDocstring):
         super().__init__(object_name, docstring_parser=options.docstring_parser)
 
         self.docstring = write.write_docstring(self.docstring_template, self.object_dict, initial_newline=initial_newline, initial_indent=initial_indent, spacer=spacer)
-
 
 
 
@@ -47,24 +159,23 @@ class Docstrung():
         self.process_package()
         
 
-
     def process_package(self):
 
         self.create_counters()
         print()
         print()
-        print('docstrung is processing:')
-        print('========================')
-        print('object_name:', self.object_name)
-        print('object_type:', self.object_type)
+        print('  docstrung is processing:')
+        print('  ============================')
+        print('  object_name:', self.object_name)
+        print('  object_type:', self.object_type)
         print()
-        print('items being docstrung:')
-        print('======================')
+        print('  items being docstrung:')
+        print('  ============================')
 
         if self.object_type == 'package':
 
             self.counters['packages']['total'] += 1
-            print('package:    ', self.object_name)
+            print('  package:    ', self.object_name)
             package_docstrung = DocstrungDocstring(self.object_name, docstring_parser=options.docstring_parser)
             self.all_docstrungs.append(package_docstrung)
             if not package_docstrung.original_docstring:
@@ -77,7 +188,7 @@ class Docstrung():
             self.subpackages = get.get_all_subpackages(self.object_name, include_private=options.include_private)
             for subpackage in self.subpackages:
                 self.counters['packages']['total'] += 1
-                print('subpackage: ', subpackage)
+                print('  subpackage: ', subpackage)
                 subpackage_docstrung = DocstrungDocstring(subpackage, docstring_parser=options.docstring_parser)
                 self.all_docstrungs.append(subpackage_docstrung)
                 if not subpackage_docstrung.original_docstring:
@@ -90,7 +201,7 @@ class Docstrung():
             self.modules = get.get_all_modules(self.object_name, include_private=options.include_private)
             for module in self.modules:
                 self.counters['modules']['total'] += 1
-                print('module:     ', module)
+                print('  module:     ', module)
                 module_docstrung = DocstrungDocstring(module, docstring_parser=options.docstring_parser)
                 self.all_docstrungs.append(module_docstrung)
                 if not module_docstrung.original_docstring:
@@ -103,7 +214,7 @@ class Docstrung():
             self.functions = get.get_all_functions(self.object_name, include_private=options.include_private)
             for function in self.functions:
                 self.counters['functions']['total'] += 1
-                print('function:   ', function)
+                print('  function:   ', function)
                 function_docstrung = DocstrungDocstring(function, docstring_parser=options.docstring_parser)
                 self.all_docstrungs.append(function_docstrung)
                 if not function_docstrung.original_docstring:
@@ -116,7 +227,7 @@ class Docstrung():
             self.classes = get.get_all_classes(self.object_name, include_private=options.include_private)
             for classi in self.classes:
                 self.counters['classes']['total'] += 1
-                print('class:      ', classi)
+                print('  class:      ', classi)
                 class_docstrung = DocstrungDocstring(classi, docstring_parser=options.docstring_parser)
                 self.all_docstrungs.append(class_docstrung)
                 if not class_docstrung.original_docstring:
@@ -129,7 +240,7 @@ class Docstrung():
             self.methods = get.get_all_methods(self.object_name, include_private=options.include_private)
             for method in self.methods:
                 self.counters['methods']['total'] += 1
-                print('method:     ', method)
+                print('  method:     ', method)
                 method_docstrung = DocstrungDocstring(method, docstring_parser=options.docstring_parser)
                 self.all_docstrungs.append(method_docstrung)
                 if not method_docstrung.original_docstring:
@@ -140,51 +251,51 @@ class Docstrung():
 
 
         self.sum_counters()
-        print()
-        print()
-        print('docstrung processed:')
-        print('====================')
-        print('object_name:', self.object_name)
-        print('object_type:', self.object_type)
-        print()
-        print('Total items docstrung:')
-        print('----------------------------')
-        print('number of items:', self.counters['total']['total'])
-        print('   undocumented:', self.counters['total']['no_docstring'])
-        print('        updated:', self.counters['total']['updated'])
-        print()
-        print('    Packages docstrung:')
-        print('    ----------------------------')
-        print('    number of items:', self.counters['packages']['total'])
-        print('       undocumented:', self.counters['packages']['no_docstring'])
-        print('            updated:', self.counters['packages']['updated'])
-        print()
-        print('    Modules docstrung:')
-        print('    ----------------------------')
-        print('    number of items:', self.counters['modules']['total'])
-        print('       undocumented:', self.counters['modules']['no_docstring'])
-        print('            updated:', self.counters['modules']['updated'])
-        print()
-        print('    Functions docstrung:')
-        print('    ----------------------------')
-        print('    number of items:', self.counters['functions']['total'])
-        print('       undocumented:', self.counters['functions']['no_docstring'])
-        print('            updated:', self.counters['functions']['updated'])
-        print()
-        print('    Classes docstrung:')
-        print('    ----------------------------')
-        print('    number of items:', self.counters['classes']['total'])
-        print('       undocumented:', self.counters['classes']['no_docstring'])
-        print('            updated:', self.counters['classes']['updated'])
-        print()
-        print('    Methods docstrung:')
-        print('    ----------------------------')
-        print('    number of items:', self.counters['methods']['total'])
-        print('       undocumented:', self.counters['methods']['no_docstring'])
-        print('            updated:', self.counters['methods']['updated'])
-        print()
+        
 
-
+        print()
+        print()
+        print('  docstrung processed:')
+        print('  ============================')
+        print('  object_name:', self.object_name)
+        print('  object_type:', self.object_type)
+        print()
+        print('  Total items docstrung:')
+        print('  ----------------------------')
+        print('  number of items:', self.counters['total']['total'])
+        print('     undocumented:', self.counters['total']['no_docstring'])
+        print('          updated:', self.counters['total']['updated'])
+        print()
+        print('  Packages docstrung:')
+        print('  ----------------------------')
+        print('  number of items:', self.counters['packages']['total'])
+        print('     undocumented:', self.counters['packages']['no_docstring'])
+        print('          updated:', self.counters['packages']['updated'])
+        print()
+        print('  Modules docstrung:')
+        print('  ----------------------------')
+        print('  number of items:', self.counters['modules']['total'])
+        print('     undocumented:', self.counters['modules']['no_docstring'])
+        print('          updated:', self.counters['modules']['updated'])
+        print()
+        print('  Functions docstrung:')
+        print('  ----------------------------')
+        print('  number of items:', self.counters['functions']['total'])
+        print('     undocumented:', self.counters['functions']['no_docstring'])
+        print('          updated:', self.counters['functions']['updated'])
+        print()
+        print('  Classes docstrung:')
+        print('  ----------------------------')
+        print('  number of items:', self.counters['classes']['total'])
+        print('     undocumented:', self.counters['classes']['no_docstring'])
+        print('          updated:', self.counters['classes']['updated'])
+        print()
+        print('  Methods docstrung:')
+        print('  ----------------------------')
+        print('  number of items:', self.counters['methods']['total'])
+        print('     undocumented:', self.counters['methods']['no_docstring'])
+        print('          updated:', self.counters['methods']['updated'])
+        print()
 
 
     def create_counters(self):
@@ -221,6 +332,7 @@ class Docstrung():
         self.counters['methods']['updated'] = 0
         self.counters['methods']['total'] = 0
 
+
     def sum_counters(self):
 
         sc = self.counters
@@ -250,23 +362,6 @@ class Docstrung():
                                + sc['methods']['updated']  
 
 
-
-
-
-
-
-
-
-                    
-
-
-# print()
-# print('==============================================================')
-# print('  docstringer complete')
-# print('  docstrings created   :', item_count)
-# print('  prev undocumented    :', undoc_count)
-# print('  bad docstrings unused:', bad_count)
-# print('  good docstrings used :', good_count)
 # print()
 # print('  your original package was copied here:')
 # print('     ', archive_dir )

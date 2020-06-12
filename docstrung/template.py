@@ -3,91 +3,9 @@ from . import options
 
 
 
-# Class definitions for package objects
-
-class ObjectDict(OrderedDict):
-    def __init__(self):
-        self['name']               = '' 
-        self['type']               = ''
-        self['default']            = ''
-        self['description']        = []
-        self['long_description']   = []
-        self['warnings']           = []
-        self['notes']              = []
-        self['see_also']           = []
-        self['examples']           = []
-        self['references']         = []
-        self['object']             = None
-        # self['initial_newline']    = options.initial_newline
-        # self['initial_indent']     = options.initial_indent
-        # self['spacer']             = options.spacer
-        
-        docstring_template_function = docstring_templates[options.docstring_template]
-
-
-class AttributeDict(ObjectDict):
-    def __init__(self):
-        super().__init__()
-
-
-class ParameterDict(ObjectDict):
-    def __init__(self):
-        super().__init__()
-
-
-class ReturnsDict(ObjectDict):
-    def __init__(self):
-        super().__init__()
-
-
-class YieldsDict(ObjectDict):
-    def __init__(self):
-        super().__init__()
-
-
-class RaisesDict(ObjectDict):
-    def __init__(self):
-        super().__init__()
-
-
-class FunctionDict(ObjectDict):
-    def __init__(self):
-        super().__init__()
-        self['attributes'] = []
-        self['parameters'] = []
-        self['returns'] = []
-        self['yields'] = []
-        self['raises'] = []
-
-
-class MethodDict(FunctionDict):
-    def __init__(self):
-        super().__init__()
-
-
-class ClassDict(FunctionDict):
-    def __init__(self):
-        super().__init__()
-        self['methods'] = []
-
-
-class ModuleDict(ClassDict):
-    def __init__(self):
-        super().__init__()
-        self['functions'] = []
-        self['classes'] = []
-        self['methods'] = []
-
-
-class PackageDict(ModuleDict):
-    def __init__(self):
-        super().__init__()
-        self['modules'] = []
-
-
-
 # Create the templates dictionary
 docstring_templates = {}
+
 
 
 # Define the default template
@@ -150,12 +68,4 @@ subsection['yields'] += '{initial_indent}{spacer}{description}\n\n'
 
 subsection['raises'] = '{initial_indent}{type}\n'
 subsection['raises'] += '{initial_indent}{spacer}{description}\n\n'
-
-
-
-
-
-
-
-            
 

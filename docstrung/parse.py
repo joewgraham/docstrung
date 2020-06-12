@@ -5,58 +5,7 @@ from . import get
 from . import template
 from . import parse
 from . import options
-
-
-
-ObjectDict    = template.ObjectDict
-AttributeDict = template.AttributeDict
-ParameterDict = template.ParameterDict
-ReturnsDict   = template.ReturnsDict
-YieldsDict    = template.YieldsDict
-RaisesDict    = template.RaisesDict
-FunctionDict  = template.FunctionDict
-MethodDict    = template.MethodDict
-ClassDict     = template.ClassDict
-ModuleDict    = template.ModuleDict
-PackageDict   = template.PackageDict
-
-
-
-class ParsedDocstring:
-    
-    def __init__(self, object_name, docstring_parser=options.docstring_parser, docstring_template=options.docstring_template):
-
-        imported_object, object_type = get.get_object(object_name, return_type=True)
-
-        self.object_name = object_name
-        self.object_type = object_type
-        self.object = imported_object
-        self.original_docstring = get.get_docstring(object_name)
-        
-        if object_type == 'package':
-            self.object_dict = template.PackageDict()
-        elif object_type == 'module':
-            self.object_dict = template.ModuleDict()
-        elif object_type == 'class':
-            self.object_dict = template.ClassDict()
-        elif object_type == 'function' or object_type == 'method':
-            self.object_dict = template.FunctionDict()
-            self.object_dict['parameters'] = read_parameters(object_name)
-        else:
-            self.object_dict = template.ObjectDict()
-
-        self.object_dict['name']   = object_name 
-        self.object_dict['type']   = object_type
-        self.object_dict['object'] = imported_object
-        self.object_dict['original_docstring'] = self.original_docstring
-
-        #self.object_dict['initial_newline']    = options.initial_newline
-        #self.object_dict['initial_indent']     = options.initial_indent
-        #self.object_dict['spacer']             = options.spacer
-
-        self.docstring_parser = getattr(parse, docstring_parser)
-        self.object_dict = self.docstring_parser(self.object_dict)
-        self.docstring_template = template.docstring_templates[options.docstring_template]
+from . import docstrung
 
 
 
@@ -71,7 +20,7 @@ def read_parameters(object_name):
 
         for param_name in signature.parameters:
 
-            ParameterDict = template.ParameterDict()
+            ParameterDict = docstrung.ParameterDict()
             ParameterDict['name'] = param_name
             param = signature.parameters[param_name]
             ParameterDict['default'] = param.default
