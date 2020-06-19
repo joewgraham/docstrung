@@ -2,16 +2,11 @@ from . import get
 from . import parse
 from . import options
 
-'''
-Fix type of class comes out type
-
-'''
-
 def default_writer(object_dict, options=options):
 
     initial_newline = options.initial_newline
     initial_indent = options.initial_indent
-    spacer = options.spacer
+    tab_size = options.tab_size
 
 
     if object_dict['type'] == 'package' or object_dict['type'] == 'module':
@@ -69,15 +64,15 @@ def default_writer(object_dict, options=options):
                 for param_dict in object_dict['parameters']:
 
                     docstring_string += initial_indent + param_dict['name'] + ' : ' + param_dict['type'] + '\n'
-                    docstring_string += initial_indent + spacer + param_dict['description'].replace('\n', '\n' + initial_indent + spacer) + '\n'
+                    docstring_string += initial_indent + tab_size + param_dict['description'].replace('\n', '\n' + initial_indent + tab_size) + '\n'
 
                     if param_dict['default'] == 'required':
-                        docstring_string += initial_indent + spacer + '**Default:** *required*\n'
+                        docstring_string += initial_indent + tab_size + '**Default:** *required*\n'
                     else:
                         use_old = False
                         if not use_old:
-                            docstring_string += initial_indent + spacer + '**Default:** ``' + param_dict['default'] + '``\n'
-                            docstring_string += initial_indent + spacer + '**Options:** \n '
+                            docstring_string += initial_indent + tab_size + '**Default:** ``' + param_dict['default'] + '``\n'
+                            docstring_string += initial_indent + tab_size + '**Options:** \n '
                     
                     docstring_string += '\n'
             
@@ -95,12 +90,7 @@ def default_writer(object_dict, options=options):
 
     elif object_dict['type'] == 'method':
         pass
-
-    else:
-        print('object_type:', object_dict['type'])
     
-
-
     return docstring_string
 
 

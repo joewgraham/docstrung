@@ -6,7 +6,7 @@ docstring_writer = 'default_writer'
 
 initial_newline = True 
 initial_indent = '    '
-spacer = '    '
+tab_size = '    '
 
 create_report = True
 save_report = True
