@@ -2,9 +2,9 @@ import importlib
 import inspect
 import os
 
+from . import options
 
-
-def get_subpackages(package_name, include_package=True, include_private=True): 
+def get_subpackages(package_name, include_package=True, options=options): 
     """
     From a given package name, return a list of subpackage names 
     """
@@ -12,7 +12,7 @@ def get_subpackages(package_name, include_package=True, include_private=True):
     package = importlib.import_module(package_name)
     items = package.__dir__()
     items = [item for item in items if not item.startswith('__')]
-    if not include_private:
+    if not options.include_private:
         items = [item for item in items if not item.startswith('_')]
     subpackages = []
 
@@ -33,7 +33,7 @@ def get_subpackages(package_name, include_package=True, include_private=True):
 
 
 
-def get_all_modules(package_name, return_subpackages_list=False, include_private=True):
+def get_all_modules(package_name, return_subpackages_list=False, options=options):
     """
     From the given package, return a list of all module names from all subpackages.
 
@@ -78,16 +78,16 @@ def get_all_modules(package_name, return_subpackages_list=False, include_private
 
 
 
-def get_all_subpackages(package_name, include_private=True):
+def get_all_subpackages(package_name, options=options):
 
-    modules, subpackages = get_all_modules(package_name, return_subpackages_list=True, include_private=include_private)
+    modules, subpackages = get_all_modules(package_name, return_subpackages_list=True, options=options)
 
     return subpackages
 
 
 
 
-def get_functions(module_name, include_private=True, include_module=True):
+def get_functions(module_name, include_module=True, options=options):
     """
     From the given module, return a list of all function names.
     """
@@ -98,7 +98,7 @@ def get_functions(module_name, include_private=True, include_module=True):
     members = inspect.getmembers(module)
     members = [member for member in members if not member[0].startswith('__')]
     
-    if not include_private:
+    if not options.include_private:
         members = [member for member in members if not member[0].startswith('_')]
 
     for member in members:
@@ -113,7 +113,7 @@ def get_functions(module_name, include_private=True, include_module=True):
 
 
 
-def get_all_functions(package_name, include_private=True, include_module=True):
+def get_all_functions(package_name, include_module=True, options=options):
     """
     From the given package, returns a list of all functions from all subpackages.
     """
@@ -123,14 +123,14 @@ def get_all_functions(package_name, include_private=True, include_module=True):
 
     for module in modules:
         
-        new_funcs = get_functions(module, include_private=include_private, include_module=include_module)
+        new_funcs = get_functions(module, include_module=include_module, options=options)
         functions.extend(new_funcs)
 
     return functions
 
 
 
-def get_classes(module_name, include_private=True, include_module=True):
+def get_classes(module_name, include_module=True, options=options):
     """
     From the given module, return a list of all class names.
     """
@@ -141,7 +141,7 @@ def get_classes(module_name, include_private=True, include_module=True):
     members = inspect.getmembers(module)
     members = [member for member in members if not member[0].startswith('__')]
     
-    if not include_private:
+    if not options.include_private:
         members = [member for member in members if not member[0].startswith('_')]
 
     for member in members:
@@ -156,7 +156,7 @@ def get_classes(module_name, include_private=True, include_module=True):
 
 
 
-def get_all_classes(package_name, include_private=True, include_module=True):
+def get_all_classes(package_name, include_module=True, options=options):
     """
     From the given package, returns a list of all classes from all subpackages.
     """
@@ -166,14 +166,14 @@ def get_all_classes(package_name, include_private=True, include_module=True):
 
     for module in modules:
         
-        new_classes = get_classes(module, include_private=include_private, include_module=include_module)
+        new_classes = get_classes(module, include_module=include_module, options=options)
         classes.extend(new_classes)
 
     return classes
 
 
 
-def get_methods(class_name, include_private=True, include_module=True):
+def get_methods(class_name, include_module=True, options=options):
 
     module_list = class_name.split('.')
     class_name = module_list.pop()
@@ -184,7 +184,7 @@ def get_methods(class_name, include_private=True, include_module=True):
     methods = inspect.getmembers(imported_class, predicate=inspect.isfunction) 
     methods = [method[0] for method in methods if not method[0].startswith('__')]
 
-    if not include_private:
+    if not options.include_private:
         methods = [method for method in methods if not method.startswith('_')]
 
     if include_module:
@@ -194,14 +194,14 @@ def get_methods(class_name, include_private=True, include_module=True):
 
 
 
-def get_all_methods(package_name, include_private=True, include_module=True):
+def get_all_methods(package_name, include_module=True, options=options):
     
     methods = []
-    classes = get_all_classes(package_name, include_private=include_private, include_module=include_module)
+    classes = get_all_classes(package_name, include_module=include_module, options=options)
 
     for classi in classes:
 
-        new_methods = get_methods(classi, include_private=include_private, include_module=include_module)
+        new_methods = get_methods(classi, include_module=include_module, options=options)
         methods.extend(new_methods)
 
     return methods

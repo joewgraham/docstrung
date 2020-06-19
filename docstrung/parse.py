@@ -2,7 +2,6 @@
 import inspect
 from collections import OrderedDict
 from . import get
-from . import template
 from . import parse
 from . import options
 from . import docstrung
@@ -32,7 +31,7 @@ def read_parameters(object_name):
                 ParameterDict['type'] = type(param.default).__name__
             
             if type(param.default) == type(inspect._empty):
-                ParameterDict['default'] = 'required'
+                ParameterDict['default'] = 'Required'
                 ParameterDict['type'] = ''
             
             elif ParameterDict['type'] == 'str':
@@ -53,6 +52,7 @@ def default_parser(object_dict):
 
     object_type = object_dict['type']
     original_docstring = object_dict['original_docstring']
+    object_dict['description'] = ['Short description of ' + object_dict['name']]
 
     parsed_docstring = None
     if original_docstring:
@@ -61,10 +61,20 @@ def default_parser(object_dict):
     if parsed_docstring:
 
         if parsed_docstring.short_description:
-            object_dict['description'] = parsed_docstring.short_description
+            
+            description = parsed_docstring.short_description
+            # Split string into lines at newline, strip whitespace, and remove empty strings
+            description = [line for line in [line.strip() for line in description.split(sep='\n')] if line]
+
+            object_dict['description'] = description 
 
         if parsed_docstring.long_description:
-            object_dict['long_description'] = parsed_docstring.long_description
+
+            long_description = parsed_docstring.long_description
+            # Split string into lines at newline, strip whitespace, and remove empty strings
+            long_description = [line for line in [line.strip() for line in long_description.split(sep='\n')] if line]
+
+            object_dict['long_description'] = long_description
 
         if object_type == 'package':
             pass

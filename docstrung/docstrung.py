@@ -10,14 +10,8 @@ from collections import OrderedDict
 
 from . import get
 from . import write
-from . import template
 from . import parse
 from . import options
-
-
-initial_newline = options.initial_newline
-initial_indent = options.initial_indent
-spacer = options.spacer
 
 
 # Class definitions for package objects
@@ -34,8 +28,6 @@ class ObjectDict(OrderedDict):
         self['examples']           = []
         self['references']         = []
         self['object']             = None
-        
-        #docstring_template_function = docstring_templates[options.docstring_template]
 
 
 class AttributeDict(ObjectDict):
@@ -101,7 +93,7 @@ class PackageDict(ModuleDict):
 
 class ParsedDocstring:
     
-    def __init__(self, object_name, docstring_parser=options.docstring_parser, docstring_template=options.docstring_template):
+    def __init__(self, object_name, options=options):
 
         imported_object, object_type = get.get_object(object_name, return_type=True)
 
@@ -127,35 +119,29 @@ class ParsedDocstring:
         self.object_dict['object'] = imported_object
         self.object_dict['original_docstring'] = self.original_docstring
 
-        self.docstring_parser = getattr(parse, docstring_parser)
+        self.docstring_parser = getattr(parse, options.docstring_parser)
         self.object_dict = self.docstring_parser(self.object_dict)
-        self.docstring_template = template.docstring_templates[options.docstring_template]
+        self.docstring_writer = getattr(write, options.docstring_writer)
 
 
 
 class DocstrungDocstring(ParsedDocstring):
 
-    def __init__(self, object_name, docstring_parser=options.docstring_parser):
+    def __init__(self, object_name, options=options):
         
-        super().__init__(object_name, docstring_parser=options.docstring_parser)
+        super().__init__(object_name, options=options)
 
-        self.docstring = write.write_docstring(self.docstring_template, self.object_dict, initial_newline=initial_newline, initial_indent=initial_indent, spacer=spacer)
+        self.docstring = self.docstring_writer(self.object_dict, options=options)
 
 
 
-# Create a template dictionary
 class Docstrung():
 
-    def __init__(self, object_name, docstring_template=options.docstring_template, options=options, recursive=True):
+    def __init__(self, object_name, options=options):
 
         self.object_name = object_name
         self.object, self.object_type = get.get_object(object_name, return_type=True)
         self.all_docstrungs = []
-
-        self.docstring_template = template.docstring_templates[docstring_template]
-        self.main_template = template.docstring_templates[docstring_template]['main']
-        self.subsection_templates = template.docstring_templates[docstring_template]['subsection']
-
         self.process_package()
         
 
@@ -176,7 +162,7 @@ class Docstrung():
 
             self.counters['packages']['total'] += 1
             print('  package:    ', self.object_name)
-            package_docstrung = DocstrungDocstring(self.object_name, docstring_parser=options.docstring_parser)
+            package_docstrung = DocstrungDocstring(self.object_name, options=options)
             self.all_docstrungs.append(package_docstrung)
             if not package_docstrung.original_docstring:
                 self.counters['packages']['no_docstring'] += 1
@@ -185,11 +171,11 @@ class Docstrung():
                 self.counters['packages']['updated'] += 1
 
             print()
-            self.subpackages = get.get_all_subpackages(self.object_name, include_private=options.include_private)
+            self.subpackages = get.get_all_subpackages(self.object_name, options=options)
             for subpackage in self.subpackages:
                 self.counters['packages']['total'] += 1
                 print('  subpackage: ', subpackage)
-                subpackage_docstrung = DocstrungDocstring(subpackage, docstring_parser=options.docstring_parser)
+                subpackage_docstrung = DocstrungDocstring(subpackage, options=options)
                 self.all_docstrungs.append(subpackage_docstrung)
                 if not subpackage_docstrung.original_docstring:
                     self.counters['packages']['no_docstring'] += 1
@@ -198,11 +184,11 @@ class Docstrung():
                     self.counters['packages']['updated'] += 1
 
             print()
-            self.modules = get.get_all_modules(self.object_name, include_private=options.include_private)
+            self.modules = get.get_all_modules(self.object_name, options=options)
             for module in self.modules:
                 self.counters['modules']['total'] += 1
                 print('  module:     ', module)
-                module_docstrung = DocstrungDocstring(module, docstring_parser=options.docstring_parser)
+                module_docstrung = DocstrungDocstring(module, options=options)
                 self.all_docstrungs.append(module_docstrung)
                 if not module_docstrung.original_docstring:
                     self.counters['modules']['no_docstring'] += 1
@@ -211,11 +197,11 @@ class Docstrung():
                     self.counters['modules']['updated'] += 1
 
             print()
-            self.functions = get.get_all_functions(self.object_name, include_private=options.include_private)
+            self.functions = get.get_all_functions(self.object_name, options=options)
             for function in self.functions:
                 self.counters['functions']['total'] += 1
                 print('  function:   ', function)
-                function_docstrung = DocstrungDocstring(function, docstring_parser=options.docstring_parser)
+                function_docstrung = DocstrungDocstring(function, options=options)
                 self.all_docstrungs.append(function_docstrung)
                 if not function_docstrung.original_docstring:
                     self.counters['functions']['no_docstring'] += 1
@@ -224,11 +210,11 @@ class Docstrung():
                     self.counters['functions']['updated'] += 1
 
             print()
-            self.classes = get.get_all_classes(self.object_name, include_private=options.include_private)
+            self.classes = get.get_all_classes(self.object_name, options=options)
             for classi in self.classes:
                 self.counters['classes']['total'] += 1
                 print('  class:      ', classi)
-                class_docstrung = DocstrungDocstring(classi, docstring_parser=options.docstring_parser)
+                class_docstrung = DocstrungDocstring(classi, options=options)
                 self.all_docstrungs.append(class_docstrung)
                 if not class_docstrung.original_docstring:
                     self.counters['classes']['no_docstring'] += 1
@@ -237,11 +223,11 @@ class Docstrung():
                     self.counters['classes']['updated'] += 1
 
             print()
-            self.methods = get.get_all_methods(self.object_name, include_private=options.include_private)
+            self.methods = get.get_all_methods(self.object_name, options=options)
             for method in self.methods:
                 self.counters['methods']['total'] += 1
                 print('  method:     ', method)
-                method_docstrung = DocstrungDocstring(method, docstring_parser=options.docstring_parser)
+                method_docstrung = DocstrungDocstring(method, options=options)
                 self.all_docstrungs.append(method_docstrung)
                 if not method_docstrung.original_docstring:
                     self.counters['methods']['no_docstring'] += 1

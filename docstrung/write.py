@@ -1,51 +1,46 @@
 from . import get
 from . import parse
-from . import template
 from . import options
 
-initial_newline = options.initial_newline
-initial_indent = options.initial_indent
-spacer = options.spacer
+"""
+create a default_writer function
+create a google_style_writer object
 
-        
-def write_docstring(docstring_template, object_dict, initial_newline=initial_newline, initial_indent=initial_indent, spacer=spacer):
+change spacer to tab_size
+"""
 
-    section_templates = docstring_template['subsection']
-    docstring_template = docstring_template['main']
 
-    options_dict = {}
-    options_dict['initial_newline'] = initial_newline
-    options_dict['initial_indent'] = initial_indent
-    options_dict['spacer'] = spacer
+def default_writer(object_dict, options=options):
 
+    initial_newline = options.initial_newline
+    initial_indent = options.initial_indent
+    spacer = options.spacer
 
     if initial_newline:
-        initial_newline_string = '\n'
+        initial_newline_string = '\n' + initial_indent
     else:
         initial_newline_string = ''
 
     docstring_string = initial_newline_string
+    first_line_written = False
+            
+    if object_dict['description']:
+        for line in object_dict['description']:
+            if not first_line_written and initial_newline:
+                docstring_string += line + '\n'
+            else:
+                docstring_string += initial_indent + line + '\n'
+            first_line_written = True
+        docstring_string += '\n'
 
-    for section, section_template in docstring_template.items():
-
-        if not section in section_templates:
-            if object_dict[section]:
-                docstring_string += section_template.format(**{**object_dict, **options_dict})
-
-        else:
-
-            if section in object_dict:
-
-                if object_dict[section]:
-
-                    docstring_string += section_templates[section].format(**{**object_dict, **options_dict})
-                    
-                    for subsection in object_dict[section]:
-
-                        subsection_template = section_templates[section]
-                        subsection_string = subsection_template.format(**{**subsection, **options_dict})
-
-                        docstring_string += subsection_string
+    if object_dict['long_description']:
+        for line in object_dict['long_description']:
+            if not first_line_written and initial_newline:
+                docstring_string += line + '\n'
+            else:
+                docstring_string += initial_indent + line + '\n'
+            first_line_written = True
+        docstring_string += '\n'
 
     return docstring_string
 
