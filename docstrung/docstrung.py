@@ -222,18 +222,19 @@ class Docstrung():
                 elif class_docstrung.original_docstring != class_docstrung.docstring:
                     self.counters['classes']['updated'] += 1
 
-            print()
-            self.methods = get.get_all_methods(self.object_name, options=options)
-            for method in self.methods:
-                self.counters['methods']['total'] += 1
-                print('  method:     ', method)
-                method_docstrung = DocstrungDocstring(method, options=options)
-                self.all_docstrungs.append(method_docstrung)
-                if not method_docstrung.original_docstring:
-                    self.counters['methods']['no_docstring'] += 1
-                    self.counters['methods']['updated'] += 1
-                elif method_docstrung.original_docstring != method_docstrung.docstring:
-                    self.counters['methods']['updated'] += 1
+            if options.include_methods:
+                print()
+                self.methods = get.get_all_methods(self.object_name, options=options)
+                for method in self.methods:
+                    self.counters['methods']['total'] += 1
+                    print('  method:     ', method)
+                    method_docstrung = DocstrungDocstring(method, options=options)
+                    self.all_docstrungs.append(method_docstrung)
+                    if not method_docstrung.original_docstring:
+                        self.counters['methods']['no_docstring'] += 1
+                        self.counters['methods']['updated'] += 1
+                    elif method_docstrung.original_docstring != method_docstrung.docstring:
+                        self.counters['methods']['updated'] += 1
 
 
         self.sum_counters()

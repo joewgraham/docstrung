@@ -1,4 +1,5 @@
 include_private = False
+include_methods = False
 
 docstring_parser = 'default_parser'
 docstring_writer = 'default_writer'

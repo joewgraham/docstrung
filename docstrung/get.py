@@ -280,7 +280,9 @@ def get_object(object_name, return_type=True):
             imported_module = importlib.import_module(module_name)
             imported_object = getattr(imported_module, object_name)
             object_type = type(imported_object).__name__
-            #print('\n\nobject_type:\n', object_type, '\n\n')
+
+            if object_type == 'type':
+                object_type = 'class'
     
         except:
             
