@@ -60,10 +60,10 @@ class FunctionDict(ObjectDict):
         super().__init__()
         self['attributes'] = []
         self['parameters'] = []
-        self['returns'] = []
-        self['yields'] = []
         self['raises'] = []
-
+        self['returns'] = None
+        self['yields'] = None
+        
 
 class MethodDict(FunctionDict):
     def __init__(self):

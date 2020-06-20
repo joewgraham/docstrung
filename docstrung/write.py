@@ -27,7 +27,7 @@ def default_writer(object_dict, options=options):
                 docstring_string += line + '\n'
             docstring_string += '\n'
 
-    elif object_dict['type'] == 'function' or object_dict['type'] == 'class': # or object_dict['type'] == 'type':
+    elif object_dict['type'] == 'function' or object_dict['type'] == 'class':
 
         if initial_newline:
             initial_newline_string = '\n' + initial_indent
@@ -78,15 +78,42 @@ def default_writer(object_dict, options=options):
             
         if 'returns' in object_dict:
             if object_dict['returns']:
-                pass
+
+                docstring_string += initial_indent + 'Returns\n'
+                docstring_string += initial_indent + '-------\n'
+                
+                #docstring_string += '    ' + object_dict['returns']['type'] + '\n'
+                #docstring_string += '        ' + object_dict['returns']['description']
+
+                docstring_string += '\n\n'
+
         
         if 'yields' in object_dict:
             if object_dict['yields']:
-                pass
+                docstring_string += initial_indent + 'Yields\n'
+                docstring_string += initial_indent + '------\n'
+                docstring_string += '\n\n'
         
         if 'raises' in object_dict:
             if object_dict['raises']:
-                pass
+                docstring_string += initial_indent + 'Raises\n'
+                docstring_string += initial_indent + '------\n'
+                docstring_string += '\n\n'
+
+        if 'see_also' in object_dict:
+            if object_dict['see_also']:
+                docstring_string += initial_indent + 'See Also\n'
+                docstring_string += initial_indent + '--------\n'
+                #docstring_string += '    ' + module + ' :'
+                docstring_string += '\n\n'
+
+        if 'examples' in object_dict:
+            if object_dict['examples']:
+                docstring_string += initial_indent + 'Examples\n'
+                docstring_string += initial_indent + '--------\n'
+                #docstring_string += '    >>> import netpyne, netpyne.examples.example\n'
+                #docstring_string += '    >>> ' + module + '.' + item + '()\n'
+                docstring_string += '\n\n'
 
     elif object_dict['type'] == 'method':
         pass
