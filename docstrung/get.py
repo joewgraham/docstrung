@@ -306,10 +306,22 @@ def get_object(object_name, return_type=True):
 def get_object_type(object_name):
 
     imported_object, object_type = get_object(object_name, return_type=True)
-
     return object_type
 
+
+
+def get_string_indexes(main, sub):
+    """
+    Finds all instances of a sub-string in a string and returns a list of their start indexes.
+    """
     
+    indexes = []
+    start = main.find(sub, 0)
+    while start != -1: 
+        indexes.append(start)
+        start = main.find(sub, start+1)
+
+    return indexes 
 
 
 

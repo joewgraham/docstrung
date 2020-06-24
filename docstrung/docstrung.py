@@ -5,7 +5,8 @@ Fix: second scipt should have ``
     script : 
         Short description of script
 """
-
+import os
+import inspect
 from collections import OrderedDict
 
 from . import get
@@ -97,9 +98,17 @@ class ParsedDocstring:
 
         imported_object, object_type = get.get_object(object_name, return_type=True)
 
-        self.object_name = object_name
-        self.object_type = object_type
+        name_list = object_name.split('.')
+
         self.object = imported_object
+        self.name = name_list.pop()
+        self.parent = '.'.join(name_list)
+        self.type = object_type
+        try:
+            self.object_file = imported_object.__file__
+        except:
+            self.object_file = os.path.abspath(inspect.getfile(imported_object))
+
         self.original_docstring = get.get_docstring(object_name)
         
         if object_type == 'package':
@@ -130,17 +139,18 @@ class DocstrungDocstring(ParsedDocstring):
     def __init__(self, object_name, options=options):
         
         super().__init__(object_name, options=options)
-
         self.docstring = self.docstring_writer(self.object_dict, options=options)
-
+        
+    def write_to_file(self):        
+        write.write_to_file(self.object_dict, self.original_docstring, self.docstring, self.object_file, options=options)
 
 
 class Docstrung():
 
     def __init__(self, object_name, options=options):
 
-        self.object_name = object_name
-        self.object, self.object_type = get.get_object(object_name, return_type=True)
+        self.name = object_name
+        self.object, self.type = get.get_object(object_name, return_type=True)
         self.all_docstrungs = []
         self.process_package()
         
@@ -152,17 +162,17 @@ class Docstrung():
         print()
         print('  docstrung is processing:')
         print('  ============================')
-        print('  object_name:', self.object_name)
-        print('  object_type:', self.object_type)
+        print('  object_name:', self.name)
+        print('  object_type:', self.type)
         print()
-        print('  items being docstrung:')
+        print('  items being processed:')
         print('  ============================')
 
-        if self.object_type == 'package':
+        if self.type == 'package':
 
             self.counters['packages']['total'] += 1
-            print('  package:    ', self.object_name)
-            package_docstrung = DocstrungDocstring(self.object_name, options=options)
+            print('  package:    ', self.name)
+            package_docstrung = DocstrungDocstring(self.name, options=options)
             self.all_docstrungs.append(package_docstrung)
             if not package_docstrung.original_docstring:
                 self.counters['packages']['no_docstring'] += 1
@@ -171,7 +181,7 @@ class Docstrung():
                 self.counters['packages']['updated'] += 1
 
             print()
-            self.subpackages = get.get_all_subpackages(self.object_name, options=options)
+            self.subpackages = get.get_all_subpackages(self.name, options=options)
             for subpackage in self.subpackages:
                 self.counters['packages']['total'] += 1
                 print('  subpackage: ', subpackage)
@@ -184,7 +194,7 @@ class Docstrung():
                     self.counters['packages']['updated'] += 1
 
             print()
-            self.modules = get.get_all_modules(self.object_name, options=options)
+            self.modules = get.get_all_modules(self.name, options=options)
             for module in self.modules:
                 self.counters['modules']['total'] += 1
                 print('  module:     ', module)
@@ -197,7 +207,7 @@ class Docstrung():
                     self.counters['modules']['updated'] += 1
 
             print()
-            self.functions = get.get_all_functions(self.object_name, options=options)
+            self.functions = get.get_all_functions(self.name, options=options)
             for function in self.functions:
                 self.counters['functions']['total'] += 1
                 print('  function:   ', function)
@@ -210,7 +220,7 @@ class Docstrung():
                     self.counters['functions']['updated'] += 1
 
             print()
-            self.classes = get.get_all_classes(self.object_name, options=options)
+            self.classes = get.get_all_classes(self.name, options=options)
             for classi in self.classes:
                 self.counters['classes']['total'] += 1
                 print('  class:      ', classi)
@@ -224,7 +234,7 @@ class Docstrung():
 
             if options.include_methods:
                 print()
-                self.methods = get.get_all_methods(self.object_name, options=options)
+                self.methods = get.get_all_methods(self.name, options=options)
                 for method in self.methods:
                     self.counters['methods']['total'] += 1
                     print('  method:     ', method)
@@ -244,8 +254,8 @@ class Docstrung():
         print()
         print('  docstrung processed:')
         print('  ============================')
-        print('  object_name:', self.object_name)
-        print('  object_type:', self.object_type)
+        print('  object_name:', self.name)
+        print('  object_type:', self.type)
         print()
         print('  Total items docstrung:')
         print('  ----------------------------')

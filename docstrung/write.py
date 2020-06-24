@@ -8,7 +8,6 @@ def default_writer(object_dict, options=options):
     initial_indent = options.initial_indent
     tab_size = options.tab_size
 
-
     if object_dict['type'] == 'package' or object_dict['type'] == 'module':
 
         if initial_newline:
@@ -122,8 +121,47 @@ def default_writer(object_dict, options=options):
 
 
 
-def write_to_file():
-    pass
+def write_to_file(object_dict, original_docstring, new_docstring, file_location, options=options):
+    
+    object_type = object_dict['type']
+
+    in_file = open(file_location, 'r')
+    file_text = in_file.read()
+    in_file.close()
+
+    if original_docstring is None:
+        docstring_loc = -1
+    else:
+        docstring_loc = file_text.find(original_docstring)
+        if len(get.get_string_indexes(file_text, original_docstring)) > 1:
+            raise Exception('The same docstring occurs in multiple locations.')
+        file_text = file_text.replace(original_docstring, new_docstring)
+        
+    if docstring_loc != -1:
+        #new_docstring += '    '  # Need to handle indenting for different types of object
+        file_text = file_text.replace(original_docstring, new_docstring)
+    
+    else:
+
+        if object_type == 'function' or object_type == 'class': 
+        
+            func_loc = get.get_string_indexes(file_text, 'def ' + item + '(')
+            class_loc = get.get_string_indexes(file_text, 'class ' + item + '(')
+
+            if func_loc:
+                obj_loc = func_loc[0] 
+            if class_loc:
+                obj_loc = class_loc[0]
+
+            docstring_loc = file_text.find('):', obj_loc) + 2
+
+            new_docstring = '\n    """' + new_docstring + '\n    """\n\n'
+        
+        file_text = file_text[:docstring_loc] + new_docstring + file_text[docstring_loc:]
+
+    out_file = open(file_location, 'w')
+    out_file.write(file_text)
+    out_file.close()
 
 
 
