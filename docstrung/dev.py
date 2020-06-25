@@ -13,6 +13,25 @@ netpyne_docstrung = np = docstrung.docstrung.Docstrung('netpyne')
 
 
 
+for item in np.all_docstrungs:
+    print()
+    print()
+    print()
+    print()
+    print(item.name)
+    print(item.type)
+    print('=====================================================')
+    print(item.report)
+    print('=====================================================')
+    print()
+    print()
+    print()
+    print()
+
+
+
+
+
 # for item in netpyne_package.all_docstrungs:
 #     print()
 #     print()

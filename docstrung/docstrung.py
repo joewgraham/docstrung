@@ -1,10 +1,12 @@
 """
-Fix: **Default**: ``required``
-
-Fix: second scipt should have ``
-    script : 
-        Short description of script
+Need docstring.name and docstring.fullname
+Need to start paths at netpyne top dir (not local dir)
+Need to link to main GitHub repo (docstrung branch) in report
+Move archive print statements to Docstrung
+Just because the default is None, doesn't mean that's the input type
+Include things to replace in brackets?  e.g. [input type], [Short description]
 """
+
 import os
 import inspect
 from collections import OrderedDict
@@ -13,6 +15,7 @@ from . import get
 from . import write
 from . import parse
 from . import options
+from . import report
 
 
 # Class definitions for package objects
@@ -101,10 +104,11 @@ class ParsedDocstring:
         name_list = object_name.split('.')
 
         self.object = imported_object
+        self.fullname = object_name
         self.name = name_list.pop()
         self.parent = '.'.join(name_list)
         self.type = object_type
-        self.object_file = get.get_object_file(object_name)
+        self.file = get.get_object_file(object_name)
         self.original_docstring = get.get_docstring(object_name)
         
         if object_type == 'package':
@@ -139,9 +143,27 @@ class DocstrungDocstring(ParsedDocstring):
 
         if options.write_to_file:
             self.write_to_file()
+
+        if options.create_report and self.docstring != self.original_docstring:
+            self.create_report()
+
+            if options.save_report:
+                pass
+
+            if options.submit_report:
+                self.submit_report()
         
     def write_to_file(self):        
-        write.write_to_file(self.object_dict, self.docstring, self.object_file, self.original_docstring, options=options)
+        write.write_to_file(self.object_dict, self.docstring, self.file, self.original_docstring, options=options)
+
+    def create_report(self):
+        self.report = report.create_report(self)
+
+    def save_report(self):
+        report.save_report(self)
+
+    def submit_report(self):
+        report.submit_report(self)
 
 
 
