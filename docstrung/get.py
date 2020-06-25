@@ -17,7 +17,6 @@ def get_subpackages(package_name, include_package=True, options=options):
     subpackages = []
 
     for item in items:
-
         try:
             imp = importlib.import_module(package_name + '.' + item)
             subpackages.append(item)
@@ -235,7 +234,10 @@ def get_object_file(object_name):
     
     imported_object, object_type = get_object(object_name, return_type=True)
 
-    object_file = imported_object.__file__
+    try:
+        object_file = imported_object.__file__
+    except:
+        object_file = get_object_file(imported_object.__module__)
 
     return object_file
 

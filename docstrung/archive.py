@@ -1,11 +1,15 @@
 import os
+import shutil
 from docstrung import get
 from datetime import datetime
+
+from . import get
 
 
 
 def archive_package(package_name, archive_dir='auto', overwrite=False):
-    """Archives the package directory.
+    """
+    Archives the package directory.
     """
 
     print()
@@ -14,10 +18,10 @@ def archive_package(package_name, archive_dir='auto', overwrite=False):
 
     date = datetime.today().strftime('%Y%m%d')
 
-    package_location = get_package_location(package_name)
+    package_dir = get.get_package_location(package_name)
 
     if archive_dir == 'auto':
-        archive_dir = os.path.join(package_location, package_name + '_' + date)
+        archive_dir = os.path.join(os.path.dirname(package_dir), package_name + '_' + date)
     elif archive_dir == 'docstrung':
         archive_dir = os.path.join(os.getcwd(), package_name + '_docstrung')
 
@@ -44,7 +48,7 @@ def archive_package(package_name, archive_dir='auto', overwrite=False):
 
 
 
-def restore_original(package_name, archive_dir):
+def restore_original(archive_dir, package_dir=None):
     """Deletes the current package directory and replaces it with an archived copy.
     """
 
@@ -52,16 +56,27 @@ def restore_original(package_name, archive_dir):
     print('docstrung.archive.restore_original')
     print('----------------------------------')
 
-    print('Copying archive:', archive_dir)
-    shutil.copytree(archive_dir, 'temp_dir')
+    if os.path.isdir('docstrung_temp'):
+        shutil.rmtree('docstrung_temp')
+
+    print('Copying archive from:', archive_dir)
+    shutil.copytree(archive_dir, 'docstrung_temp')
     
-    print('Removing package directory')
-    package_location = get_package_location(package_name)
-    shutil.rmtree(package_location)
+    #print('Removing package directory')
+    if package_dir is None:
+        
+        package_parent, archive_name = os.path.split(archive_dir)
+        package_name = os.path.split(os.path.dirname(archive_dir))[-1]
+        package_dir = os.path.join(package_parent, package_name)
+
+    else:
+        package_dir = get.get_package_location(package_name)
+        
+    shutil.rmtree(package_dir)
     
-    print('Restoring archive to:', package_location)
-    shutil.copytree('temp_dir', package_location)
-    shutil.rmtree('temp_dir')
+    print('Restoring archive to:', package_dir)
+    shutil.copytree('docstrung_temp', package_dir)
+    shutil.rmtree('docstrung_temp')
 
     print('----------------------------------')
     print()

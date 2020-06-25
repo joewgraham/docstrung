@@ -104,11 +104,7 @@ class ParsedDocstring:
         self.name = name_list.pop()
         self.parent = '.'.join(name_list)
         self.type = object_type
-        try:
-            self.object_file = imported_object.__file__
-        except:
-            self.object_file = os.path.abspath(inspect.getfile(imported_object))
-
+        self.object_file = get.get_object_file(object_name)
         self.original_docstring = get.get_docstring(object_name)
         
         if object_type == 'package':
@@ -140,9 +136,13 @@ class DocstrungDocstring(ParsedDocstring):
         
         super().__init__(object_name, options=options)
         self.docstring = self.docstring_writer(self.object_dict, options=options)
+
+        if options.write_to_file:
+            self.write_to_file()
         
     def write_to_file(self):        
-        write.write_to_file(self.object_dict, self.original_docstring, self.docstring, self.object_file, options=options)
+        write.write_to_file(self.object_dict, self.docstring, self.object_file, self.original_docstring, options=options)
+
 
 
 class Docstrung():
