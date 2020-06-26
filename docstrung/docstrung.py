@@ -1,12 +1,12 @@
 """
 Can't assume indentation based on type, just saw a class defined in a try/except
     Problem seems limited to neuromlFormat, but should be handled
+    For now, I am excluding the problematic objects
 Need to start paths at netpyne top dir (not local dir)
 Need to link to main GitHub repo (docstrung branch) in report
-Move archive print statements to Docstrung
+Move archive print statements to Docstrung?
 Just because the default is None, doesn't mean that's the input type
-Include things to replace in brackets?  e.g. [input type], [Short description]
-Maybe restore files that no longer import to their original state?
+Include things to replace in carats?  e.g. <input type>, <Short description>
 """
 
 import os
@@ -389,15 +389,5 @@ class Docstrung():
                                + sc['functions']['updated'] \
                                + sc['classes']['updated']   \
                                + sc['methods']['updated']  
-
-
-# print()
-# print('  your original package was copied here:')
-# print('     ', archive_dir )
-# print()
-# print('  your docstrung package is here: ')
-# print('     ', package_dir)
-# print()
-
 
 

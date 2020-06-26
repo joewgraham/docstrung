@@ -12,16 +12,7 @@ netpyne_docstrung = np = docstrung.docstrung.Docstrung('netpyne', exclude=exclud
 
 
 for item in np.all_docstrungs:
-    print()
-    print()
-    print()
-    print()
     print('=====================================================')
     print(item.report)
     print('=====================================================')
-    print()
-    print()
-    print()
-    print()
-
-import netpyne
+   
