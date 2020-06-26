@@ -327,6 +327,24 @@ def get_string_indexes(main, sub):
 
 
 
+def get_github_token(token_location):
+
+    if not os.path.isfile(token_location):
+
+        from os.path import expanduser
+        home = expanduser("~")
+        token_location = os.path.join(home, token_location)
+        
+        if not os.path.isfile(token_location):
+            raise Exception('Could not find token file in token_location.')
+    
+    in_file = open(token_location, 'r')
+    github_token = in_file.read()
+    in_file.close()
+
+    github_token = github_token.replace('\n', '')
+
+    return github_token
 
 
 

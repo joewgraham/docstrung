@@ -2,11 +2,8 @@ import os
 import json
 import requests
 
-USERNAME = 'joewgraham'
-PASSWORD = ''
-
-REPO_OWNER = 'joewgraham'
-REPO_NAME = 'netpyne'
+from . import get
+from . import options
 
 
 
@@ -45,23 +42,29 @@ def save_report(docstring_object):
 
 
 
-def submit_report(docstring_object):
-    
+def submit_report(docstring_object, repo_owner=None, repo_name=None, user_name=None, token=None, labels=None, options=options):
+
     report_string = docstring_object.report
+    
+    if repo_owner is None:
+        repo_owner = options.github_username
+    if repo_name is None:
+        repo_name = docstring_object.fullname.split('.')[0]
+    if user_name is None:
+        user_name = options.github_username
+    if token is None:
+        token = get.get_github_token(options.github_token)
+    if labels is None:
+        labels = ['docstrung']
     
     title  = report_string.splitlines()[0]
     body   = report_string
-    labels = ['docstrung']
 
-    url = 'https://api.github.com/repos/%s/%s/issues' % (REPO_OWNER, REPO_NAME)
+    url = 'https://api.github.com/repos/%s/%s/issues' % (repo_owner, repo_name)
     session = requests.Session()
-    session.auth = (USERNAME, PASSWORD)
-    issue = {'title': title,
-             'body': body,
-             'labels': labels}
-    r = session.post(url, json.dumps(issue))
-    if r.status_code == 201:
-        print ('Successfully created Issue {0:s}'.format(title))
-    else:
-        print ('Could not create Issue {0:s}'.format(title))
-        print ('Response:', r.content)
+    session.auth = (user_name, token)
+    issue = {'title': title, 'body': body, 'labels': labels}
+    response = session.post(url, json.dumps(issue))
+    if not response.status_code == 201:
+        print ('Could not create GitHub issue: {0:s}'.format(title))
+        print ('Response:', response.content)
