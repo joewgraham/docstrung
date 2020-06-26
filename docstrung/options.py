@@ -25,9 +25,10 @@ write_to_file = True
 docstring_reporter = 'default_reporter'
 create_report = True
 save_report = True
-submit_report = True
+submit_report = False
 
 # GitHub options
 github_token = '.github_token'
 github_username = 'joewgraham'
+github_branch = 'docstrung'
 

@@ -1,10 +1,12 @@
 """
-Need docstring.name and docstring.fullname
+Can't assume indentation based on type, just saw a class defined in a try/except
+    Problem seems limited to neuromlFormat, but should be handled
 Need to start paths at netpyne top dir (not local dir)
 Need to link to main GitHub repo (docstrung branch) in report
 Move archive print statements to Docstrung
 Just because the default is None, doesn't mean that's the input type
 Include things to replace in brackets?  e.g. [input type], [Short description]
+Maybe restore files that no longer import to their original state?
 """
 
 import os
@@ -169,11 +171,12 @@ class DocstrungDocstring(ParsedDocstring):
 
 class Docstrung():
 
-    def __init__(self, object_name, options=options):
+    def __init__(self, object_name, exclude=[], options=options):
 
         self.name = object_name
         self.object, self.type = get.get_object(object_name, return_type=True)
         self.all_docstrungs = []
+        self.exclude = exclude
         self.process_package()
         
 
@@ -192,6 +195,8 @@ class Docstrung():
 
         if self.type == 'package':
 
+            print('exclude:', self.exclude)
+
             self.counters['packages']['total'] += 1
             print('  package:    ', self.name)
             package_docstrung = DocstrungDocstring(self.name, options=options)
@@ -205,68 +210,73 @@ class Docstrung():
             print()
             self.subpackages = get.get_all_subpackages(self.name, options=options)
             for subpackage in self.subpackages:
-                self.counters['packages']['total'] += 1
-                print('  subpackage: ', subpackage)
-                subpackage_docstrung = DocstrungDocstring(subpackage, options=options)
-                self.all_docstrungs.append(subpackage_docstrung)
-                if not subpackage_docstrung.original_docstring:
-                    self.counters['packages']['no_docstring'] += 1
-                    self.counters['packages']['updated'] += 1
-                elif subpackage_docstrung.original_docstring != subpackage_docstrung.docstring:
-                    self.counters['packages']['updated'] += 1
+                if subpackage not in self.exclude:
+                    self.counters['packages']['total'] += 1
+                    print('  subpackage: ', subpackage)
+                    subpackage_docstrung = DocstrungDocstring(subpackage, options=options)
+                    self.all_docstrungs.append(subpackage_docstrung)
+                    if not subpackage_docstrung.original_docstring:
+                        self.counters['packages']['no_docstring'] += 1
+                        self.counters['packages']['updated'] += 1
+                    elif subpackage_docstrung.original_docstring != subpackage_docstrung.docstring:
+                        self.counters['packages']['updated'] += 1
 
             print()
             self.modules = get.get_all_modules(self.name, options=options)
             for module in self.modules:
-                self.counters['modules']['total'] += 1
-                print('  module:     ', module)
-                module_docstrung = DocstrungDocstring(module, options=options)
-                self.all_docstrungs.append(module_docstrung)
-                if not module_docstrung.original_docstring:
-                    self.counters['modules']['no_docstring'] += 1
-                    self.counters['modules']['updated'] += 1
-                elif module_docstrung.original_docstring != module_docstrung.docstring:
-                    self.counters['modules']['updated'] += 1
+                if module not in self.exclude:
+                    self.counters['modules']['total'] += 1
+                    print('  module:     ', module)
+                    module_docstrung = DocstrungDocstring(module, options=options)
+                    self.all_docstrungs.append(module_docstrung)
+                    if not module_docstrung.original_docstring:
+                        self.counters['modules']['no_docstring'] += 1
+                        self.counters['modules']['updated'] += 1
+                    elif module_docstrung.original_docstring != module_docstrung.docstring:
+                        self.counters['modules']['updated'] += 1
 
             print()
             self.functions = get.get_all_functions(self.name, options=options)
             for function in self.functions:
-                self.counters['functions']['total'] += 1
-                print('  function:   ', function)
-                function_docstrung = DocstrungDocstring(function, options=options)
-                self.all_docstrungs.append(function_docstrung)
-                if not function_docstrung.original_docstring:
-                    self.counters['functions']['no_docstring'] += 1
-                    self.counters['functions']['updated'] += 1
-                elif function_docstrung.original_docstring != function_docstrung.docstring:
-                    self.counters['functions']['updated'] += 1
+                if function not in self.exclude:
+                    self.counters['functions']['total'] += 1
+                    print('  function:   ', function)
+                    function_docstrung = DocstrungDocstring(function, options=options)
+                    self.all_docstrungs.append(function_docstrung)
+                    if not function_docstrung.original_docstring:
+                        self.counters['functions']['no_docstring'] += 1
+                        self.counters['functions']['updated'] += 1
+                    elif function_docstrung.original_docstring != function_docstrung.docstring:
+                        self.counters['functions']['updated'] += 1
 
             print()
             self.classes = get.get_all_classes(self.name, options=options)
             for classi in self.classes:
-                self.counters['classes']['total'] += 1
-                print('  class:      ', classi)
-                class_docstrung = DocstrungDocstring(classi, options=options)
-                self.all_docstrungs.append(class_docstrung)
-                if not class_docstrung.original_docstring:
-                    self.counters['classes']['no_docstring'] += 1
-                    self.counters['classes']['updated'] += 1
-                elif class_docstrung.original_docstring != class_docstrung.docstring:
-                    self.counters['classes']['updated'] += 1
+                if classi not in self.exclude:
+                    self.counters['classes']['total'] += 1
+                    print('  class:      ', classi)
+                    class_docstrung = DocstrungDocstring(classi, options=options)
+                    self.all_docstrungs.append(class_docstrung)
+                    if not class_docstrung.original_docstring:
+                        self.counters['classes']['no_docstring'] += 1
+                        self.counters['classes']['updated'] += 1
+                    elif class_docstrung.original_docstring != class_docstrung.docstring:
+                        self.counters['classes']['updated'] += 1
 
             if options.include_methods:
                 print()
                 self.methods = get.get_all_methods(self.name, options=options)
                 for method in self.methods:
-                    self.counters['methods']['total'] += 1
-                    print('  method:     ', method)
-                    method_docstrung = DocstrungDocstring(method, options=options)
-                    self.all_docstrungs.append(method_docstrung)
-                    if not method_docstrung.original_docstring:
-                        self.counters['methods']['no_docstring'] += 1
-                        self.counters['methods']['updated'] += 1
-                    elif method_docstrung.original_docstring != method_docstrung.docstring:
-                        self.counters['methods']['updated'] += 1
+                    if method not in self.exclude:
+                        self.counters['methods']['total'] += 1
+                        print('  method:     ', method)
+                        method_docstrung = DocstrungDocstring(method, options=options)
+                        self.all_docstrungs.append(method_docstrung)
+                        if not method_docstrung.original_docstring:
+                            self.counters['methods']['no_docstring'] += 1
+                            self.counters['methods']['updated'] += 1
+                        elif method_docstrung.original_docstring != method_docstrung.docstring:
+                            self.counters['methods']['updated'] += 1
 
 
         self.sum_counters()

@@ -145,9 +145,10 @@ def write_to_file(object_dict, new_docstring, file_location, original_docstring=
     else:
 
         if object_type == 'package' or object_type == 'module':
-            obj_loc = 0
-
-        elif object_type == 'function': 
+            docstring_loc = 0
+            new_docstring = '"""' + new_docstring + '"""\n\n'
+            
+        if object_type == 'function': 
         
             func_loc = get.get_string_indexes(file_text, 'def ' + object_name + '(')
 
@@ -155,6 +156,9 @@ def write_to_file(object_dict, new_docstring, file_location, original_docstring=
                 obj_loc = func_loc[0] 
             else:
                 raise Exception('  Error: could not find function in file.')
+
+            docstring_loc = file_text.find('):', obj_loc) + 2
+            new_docstring = '\n    """' + new_docstring + '\n    """\n\n'
 
         elif object_type == 'class': 
 
@@ -164,9 +168,10 @@ def write_to_file(object_dict, new_docstring, file_location, original_docstring=
                 obj_loc = class_loc[0]
             else:
                 raise Exception('  Error: could not find class in file.')
-            
-        docstring_loc = file_text.find('):', obj_loc) + 2
-        new_docstring = '\n    """' + new_docstring + '\n    """\n\n'
+        
+            docstring_loc = file_text.find('):', obj_loc) + 2
+            new_docstring = '\n    """' + new_docstring + '\n    """\n\n'
+        
         file_text = file_text[:docstring_loc] + new_docstring + file_text[docstring_loc:]
 
     out_file = open(file_location, 'w')

@@ -11,12 +11,13 @@ def create_report(docstring_object):
     
     doc = docstring_object
     
-    report_string = 'Check docstring for {}: {}'.format(doc.type, doc.fullname)
+    report_string = 'Check docstring for {}: `{}`'.format(doc.type, doc.fullname)
     report_string += '\n\n'
 
-    report_string += 'The docstring for the Python {} {} '.format(doc.type, doc.name)  
+    report_string += 'The docstring for the {} `{}` '.format(doc.type, doc.name)
+    report_string += 'from `{}` '.format(doc.parent)
     report_string += 'has been automagically updated by Docstrung.\n\n'
-    report_string += 'It is located in the following file:\n{}\n\n'.format(doc.file)
+    report_string += 'It is located in the following location:\n```{}```\n\n'.format(doc.file)
 
     report_string += 'Please ensure the new docstring is correct and '
     report_string += 'completely filled in.\n\n'
@@ -42,7 +43,7 @@ def save_report(docstring_object):
 
 
 
-def submit_report(docstring_object, repo_owner=None, repo_name=None, user_name=None, token=None, labels=None, options=options):
+def submit_report(docstring_object, repo_owner=None, repo_name=None, repo_branch=None, user_name=None, token=None, labels=None, options=options):
 
     report_string = docstring_object.report
     
@@ -50,6 +51,8 @@ def submit_report(docstring_object, repo_owner=None, repo_name=None, user_name=N
         repo_owner = options.github_username
     if repo_name is None:
         repo_name = docstring_object.fullname.split('.')[0]
+    if repo_branch is None:
+        repo_branch = options.github_branch
     if user_name is None:
         user_name = options.github_username
     if token is None:

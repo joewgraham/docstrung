@@ -4,14 +4,11 @@ docstrung dev
 
 import docstrung
 
+exclude=['netpyne.conversion.neuromlFormat.NetPyNEBuilder', 'netpyne.conversion.neuromlFormat.importNeuroML2']
 
-#docstrung.archive.archive_package('netpyne')
+docstrung.archive.restore_original('/Users/graham/Applications/python_modules/netpyne/netpyne_predocstrung')
 
-docstrung.archive.restore_original('/Users/graham/Applications/python_modules/netpyne/netpyne_20200624')
-
-netpyne_docstrung = np = docstrung.docstrung.Docstrung('netpyne')
-
-
+netpyne_docstrung = np = docstrung.docstrung.Docstrung('netpyne', exclude=exclude)
 
 
 for item in np.all_docstrungs:
@@ -19,8 +16,6 @@ for item in np.all_docstrungs:
     print()
     print()
     print()
-    print(item.name)
-    print(item.type)
     print('=====================================================')
     print(item.report)
     print('=====================================================')
@@ -29,32 +24,4 @@ for item in np.all_docstrungs:
     print()
     print()
 
-
-
-
-
-# for item in netpyne_package.all_docstrungs:
-#     print()
-#     print()
-#     print()
-#     print()
-#     print(item.name)
-#     print(item.type)
-#     print('=====================================================')
-#     print()
-#     print()
-#     print('old docstring')
-#     print('-----------------------------------------------------')
-#     print(item.original_docstring)
-#     print('-----------------------------------------------------')
-#     print()
-#     print()
-#     print('new docstring')
-#     print('-----------------------------------------------------')
-#     print(item.docstring)
-#     print('-----------------------------------------------------')
-#     print()
-#     print()
-#     print()
-#     print()
-
+import netpyne
