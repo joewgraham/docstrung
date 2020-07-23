@@ -13,6 +13,7 @@ docstring_parser = 'default_parser'
 parse_description = False
 parse_long_description = False
 parse_parameters = True
+parse_options = False
 
 # docstring writing options
 docstring_writer = 'default_writer'
@@ -24,8 +25,8 @@ write_to_file = True
 # docstring reporting options
 docstring_reporter = 'default_reporter'
 create_report = True
-save_report = True
-submit_report = False
+save_report = True  # not implemented yet
+submit_report = True
 
 # GitHub options
 github_token = '.github_token'

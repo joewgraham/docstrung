@@ -8,11 +8,11 @@ exclude=['netpyne.conversion.neuromlFormat.NetPyNEBuilder', 'netpyne.conversion.
 
 docstrung.archive.restore_original('/Users/graham/Applications/python_modules/netpyne/netpyne_predocstrung')
 
-netpyne_docstrung = np = docstrung.docstrung.Docstrung('netpyne', exclude=exclude)
+# netpyne_docstrung = np = docstrung.docstrung.Docstrung('netpyne', exclude=exclude)
 
 
-for item in np.all_docstrungs:
-    print('=====================================================')
-    print(item.report)
-    print('=====================================================')
+# for item in np.all_docstrungs:
+#     print('=====================================================')
+#     print(item.report)
+#     print('=====================================================')
    

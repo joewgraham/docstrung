@@ -11,16 +11,36 @@ def create_report(docstring_object):
     
     doc = docstring_object
     
-    report_string = 'Check docstring for {}: `{}`'.format(doc.type, doc.fullname)
+    report_string = 'Check the docstring for {}: `{}`'.format(doc.type, doc.name)
     report_string += '\n\n'
 
     report_string += 'The docstring for the {} `{}` '.format(doc.type, doc.name)
-    report_string += 'from `{}` '.format(doc.parent)
+    if doc.parent:
+        report_string += '(from `{}`) '.format(doc.parent)
     report_string += 'has been automagically updated by Docstrung.\n\n'
-    report_string += 'It is located in the following location:\n```{}```\n\n'.format(doc.file)
+
+    top_package = doc.fullname.split('.')[0] 
+    rel_path = doc.file[doc.file.find(top_package) + len(top_package) + 1:]
+    link = 'https://github.com/Neurosim-lab/' + top_package + '/blob/docstrung/' + rel_path  
+
+    report_string += 'It is located in the following location on GitHub:\n'
+    report_string += link
+    report_string += '\n\n'
+
+    report_string += 'You can edit the docstring directly in your browser and commit.\n\n'
 
     report_string += 'Please ensure the new docstring is correct and '
-    report_string += 'completely filled in.\n\n'
+    report_string += 'completely filled in.  Be sure to replace or '
+    report_string += 'delete ``<carats>`` and their contents.\n\n'
+
+    report_string += 'If the docstring is for a function, and if the '
+    report_string += 'function returns something, be sure to add a '
+    report_string += 'returns section to the end of the docstring:\n\n'
+
+    report_string += '    Returns\n'
+    report_string += '    =======\n'
+    report_string += '    ``<return type>``\n'
+    report_string += '        <description of return>\n\n'
 
     report_string += 'The original docstring was as follows:\n'
     report_string += '```'

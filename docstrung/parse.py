@@ -26,16 +26,16 @@ def read_parameters(object_name):
             ParameterDict['name'] = param_name
             param = signature.parameters[param_name]
             ParameterDict['default'] = param.default
-            ParameterDict['description'] = 'Short description of ' + param_name
+            ParameterDict['description'] = '<Short description of ' + param_name + '>'
             
             if param.default is None:
-                ParameterDict['type'] = 'None'
+                ParameterDict['type'] = '<``None``?>'
             else:
                 ParameterDict['type'] = type(param.default).__name__
             
             if type(param.default) == type(inspect._empty):
                 ParameterDict['default'] = 'Required'
-                ParameterDict['type'] = ''
+                ParameterDict['type'] = '<type>'
             
             elif ParameterDict['type'] == 'str':
                 ParameterDict['default'] = "'" + ParameterDict['default'] + "'"
@@ -55,7 +55,8 @@ def default_parser(object_dict, options=options):
 
     object_type = object_dict['type']
     original_docstring = object_dict['original_docstring']
-    object_dict['description'] = ['Short description of `' + object_dict['name'] + '`']
+    #object_dict['description'] = ['Short description of `' + object_dict['name'] + '`']
+    object_dict['description'] = [object_type.capitalize() + ' for/to ' + '<short description of `' + object_dict['name'] + '`>']
 
     parsed_docstring = None
     if original_docstring:

@@ -67,13 +67,19 @@ def default_writer(object_dict, options=options):
                     docstring_string += initial_indent + param_dict['name'] + ' : ' + param_dict['type'] + '\n'
                     docstring_string += initial_indent + tab_size + param_dict['description'].replace('\n', '\n' + initial_indent + tab_size) + '\n'
 
-                    if param_dict['default'] == 'required':
+                    if 'required' in param_dict['default'] or 'Required' in param_dict['default']:
                         docstring_string += initial_indent + tab_size + '**Default:** *required*\n'
                     else:
-                        use_old = False
-                        if not use_old:
+                        desc = param_dict['description']
+                        if not 'default' in desc and not 'Default' in desc:
                             docstring_string += initial_indent + tab_size + '**Default:** ``' + param_dict['default'] + '``\n'
-                            docstring_string += initial_indent + tab_size + '**Options:** \n '
+                        if not 'options' in desc and not 'Options' in desc:
+                            docstring_string += initial_indent + tab_size + '**Options:** ``<option>`` <description of option>\n '
+
+                        # use_old = False
+                        # if not use_old:
+                        #     docstring_string += initial_indent + tab_size + '**Default:** ``' + param_dict['default'] + '``\n'
+                        #     docstring_string += initial_indent + tab_size + '**Options:** \n '
                     
                     docstring_string += '\n'
             

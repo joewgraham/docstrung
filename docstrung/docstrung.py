@@ -1,8 +1,8 @@
 """
 Can't assume indentation based on type, just saw a class defined in a try/except
     Problem seems limited to neuromlFormat, but should be handled
-    For now, I am excluding the problematic objects
-Need to start paths at netpyne top dir (not local dir)
+    For now, I am excluding the problematic objects (see dev)
+Need to include path from netpyne top dir (as well as from absolute dir)
 Need to link to main GitHub repo (docstrung branch) in report
 Move archive print statements to Docstrung?
 Just because the default is None, doesn't mean that's the input type
@@ -190,12 +190,13 @@ class Docstrung():
         print('  object_name:', self.name)
         print('  object_type:', self.type)
         print()
+        if self.exclude:
+            print('  excluding:', self.exclude)
+            print()
         print('  items being processed:')
         print('  ============================')
 
         if self.type == 'package':
-
-            print('exclude:', self.exclude)
 
             self.counters['packages']['total'] += 1
             print('  package:    ', self.name)
